@@ -3,7 +3,8 @@ import logging
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
@@ -67,6 +68,12 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(title=settings.APP_NAME, lifespan=lifespan, docs_url="/api/docs", openapi_url="/api/openapi.json")
+
+
+@app.exception_handler(Exception)
+async def unhandled_error(request: Request, exc: Exception):
+    log.exception("Unhandled error on %s %s", request.method, request.url.path)
+    return JSONResponse(status_code=500, content={"detail": f"Server error ({type(exc).__name__}: {exc}). Try again; if it repeats, send this message to your admin."})
 app.add_middleware(CORSMiddleware, allow_origins=settings.cors_list, allow_credentials=True,
                    allow_methods=["*"], allow_headers=["*"])
 
