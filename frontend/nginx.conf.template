@@ -34,11 +34,18 @@ server {
 
   location /api/ {
     proxy_pass $api_upstream;
+    proxy_connect_timeout 75s;
+    proxy_send_timeout 120s;
     proxy_read_timeout 120s;
+    # Free-tier upstream can be mid-wake or briefly reset; retry once rather than
+    # surfacing a bare 500 for a connection-level hiccup.
+    proxy_next_upstream error timeout;
+    proxy_next_upstream_tries 2;
   }
 
   location /uploads/ {
     proxy_pass $api_upstream;
+    proxy_connect_timeout 75s;
   }
 
   location = /ws {
