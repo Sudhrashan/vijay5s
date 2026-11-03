@@ -11,6 +11,7 @@ import { Tip } from "./Tip";
 const PAGES = [
   { path: "/", label: "Dashboard", title: "5S Dashboard", icon: IC.dash },
   { path: "/audits", label: "Audits", title: "Audit Calendar", icon: IC.audit },
+  { path: "/photos", label: "Photos", title: "Audit Photos", icon: IC.photo },
   { path: "/issues", label: "Issues", title: "Issue Register", icon: IC.issue, badge: true },
   { path: "/users", label: "Users", title: "Users", icon: IC.user },
   { path: "/zones", label: "Zones", title: "Zones", icon: IC.zone },

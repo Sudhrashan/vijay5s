@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Audits from "./pages/Audits";
 import Issues from "./pages/Issues";
+import Photos from "./pages/Photos";
 import Users from "./pages/Users";
 import Zones from "./pages/Zones";
 import Allocation from "./pages/Allocation";
@@ -53,6 +54,7 @@ function Gate() {
         <Route element={<Layout />}>
           <Route index element={<Dashboard />} />
           <Route path="audits" element={<Audits />} />
+          <Route path="photos" element={<Photos />} />
           <Route path="issues" element={<Issues />} />
           <Route path="users" element={<Users />} />
           <Route path="zones" element={<Zones />} />

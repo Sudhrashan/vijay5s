@@ -90,6 +90,27 @@ def test_log_findings_then_complete(client, seeded_db, incharge_headers):
     assert "score" not in body
 
 
+def test_gallery_lists_findings_by_zone_and_category(client, seeded_db, admin_headers, auditor_headers):
+    zone, auditor = _future_zone_and_auditor(client, admin_headers)
+    scheduled = client.post("/api/audits", headers=admin_headers,
+                            json={"zone_id": zone["id"], "planned_date": str(date.today() + timedelta(days=5)),
+                                  "auditor_ids": [auditor["id"]]}).json()
+    aid, cyc = scheduled["id"], scheduled["cycle"]
+    _add_finding(client, admin_headers, aid, "1S", "Scrap lying near dock")
+    _add_finding(client, admin_headers, aid, "3S", "Dust on control panel")
+
+    rows = client.get("/api/findings", headers=admin_headers, params={"cycle": cyc, "zone_id": zone["id"]}).json()["items"]
+    mine = [r for r in rows if r["audit_id"] == aid]
+    assert {r["category"] for r in mine} == {"1S", "3S"}
+    assert all(r["zone"] == "Warehouse" and r["zone_id"] == zone["id"] and r["photo_url"] for r in rows)
+    assert auditor["name"] in mine[0]["auditors"]
+
+    only3 = client.get("/api/findings", headers=admin_headers, params={"cycle": cyc, "category": "3S"}).json()["items"]
+    assert only3 and all(r["category"] == "3S" for r in only3)
+
+    assert client.get("/api/findings", headers=auditor_headers).status_code == 403
+
+
 def test_complete_blocked_once_completed(client, seeded_db, incharge_headers):
     zone, auditor = _future_zone_and_auditor(client, incharge_headers)
     scheduled = client.post("/api/audits", headers=incharge_headers,

@@ -88,6 +88,22 @@ def list_findings(audit_id: int, user: User = Depends(anyone), db: Session = Dep
     return {"items": [finding_out(f) for f in rows]}
 
 
+@router.get("/findings", dependencies=[Depends(staff)])
+def all_findings(cycle: str | None = None, zone_id: int | None = None, category: str | None = None,
+                 db: Session = Depends(get_db)):
+    """Every finding in a cycle across all zones, for the admin photo gallery."""
+    cyc = cycle or current_cycle()
+    q = db.query(Finding, Audit).join(Audit, Finding.audit_id == Audit.id).filter(Audit.cycle == cyc)
+    if zone_id:
+        q = q.filter(Audit.zone_id == zone_id)
+    if category:
+        q = q.filter(Finding.category == category)
+    items = [{**finding_out(f), "zone_id": a.zone_id, "zone": a.zone.name,
+              "auditors": ", ".join(u.name for u in a.auditors)}
+             for f, a in q.order_by(Finding.id.desc()).all()]
+    return {"cycle": cyc, "items": items}
+
+
 @router.post("/audits/{audit_id}/findings", status_code=201)
 def add_finding(audit_id: int, bg: BackgroundTasks, category: str = Form(...), remark: str = Form(...),
                photo: UploadFile = File(...), user: User = Depends(anyone), db: Session = Depends(get_db)):

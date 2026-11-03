@@ -31,4 +31,5 @@ export interface Settings {
 }
 export interface LiveEvent { topic: string; data: Record<string, any>; at?: string; }
 export interface Finding { id: number; audit_id: number; category: string; remark: string; photo_url: string; recorded_at: string | null; }
+export interface GalleryFinding extends Finding { zone_id: number; zone: string; auditors: string; }
 export interface AuditsResponse { cycle: string; today: string; items: Audit[]; }
