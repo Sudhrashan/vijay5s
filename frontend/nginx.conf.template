@@ -12,8 +12,6 @@ map $http_upgrade $connection_upgrade {
   ''      close;
 }
 
-error_log /dev/stderr debug;
-
 server {
   listen ${PORT};
   listen [::]:${PORT};
