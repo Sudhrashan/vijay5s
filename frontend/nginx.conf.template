@@ -41,6 +41,9 @@ server {
     # surfacing a bare 500 for a connection-level hiccup.
     proxy_next_upstream error timeout;
     proxy_next_upstream_tries 2;
+    # Stream multipart photo uploads straight to the upstream instead of spooling the
+    # whole body to a temp file first -- disk-spill was correlating with bare 500s here.
+    proxy_request_buffering off;
   }
 
   location /uploads/ {
