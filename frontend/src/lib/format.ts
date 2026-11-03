@@ -1,7 +1,5 @@
 export const ini = (n: string) => n.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
 export const first = (n: string) => n.split(" ")[0];
-export const scoreColor = (s: number, min = 75) => (s >= 90 ? "var(--green)" : s >= min ? "var(--amber)" : "var(--red)");
-export const scorePill = (s: number, min = 75) => (s >= 90 ? "p-green" : s >= min ? "p-amber" : "p-red");
 export const statusPill = (s: string) => (s === "Open" ? "p-red" : "p-green");
 export const priPill = (p: string) => (p === "Critical" ? "p-red" : p === "Major" ? "p-amber" : "p-navy");
 export const auditPill = (s: string) =>

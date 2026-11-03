@@ -9,7 +9,7 @@ from app.models import Audit, Issue, Zone
 from app.realtime.hub import hub
 from app.schemas.inputs import ZoneIn
 from app.services.serializers import days_open, zone_out
-from app.services.stats import current_cycle, zone_scores
+from app.services.stats import current_cycle, zone_finding_counts
 
 router = APIRouter(prefix="/zones", tags=["zones"])
 
@@ -17,7 +17,7 @@ router = APIRouter(prefix="/zones", tags=["zones"])
 @router.get("", dependencies=[Depends(anyone)])
 def list_zones(db: Session = Depends(get_db)):
     issues = db.query(Issue).all()
-    scores = zone_scores(db.query(Audit).all(), current_cycle())
+    findings = zone_finding_counts(db, db.query(Audit).all(), current_cycle())
     op = Counter(i.zone_id for i in issues if i.status == "Open")
     cl = Counter(i.zone_id for i in issues if i.status == "Closed")
     closed_days: dict[int, list[int]] = {}
@@ -27,7 +27,7 @@ def list_zones(db: Session = Depends(get_db)):
     out = []
     for z in db.query(Zone).order_by(Zone.name):
         d = closed_days.get(z.id, [])
-        out.append(zone_out(z, op.get(z.id, 0), cl.get(z.id, 0), scores.get(z.id),
+        out.append(zone_out(z, op.get(z.id, 0), cl.get(z.id, 0), findings.get(z.id, 0),
                             round(sum(d) / len(d), 1) if d else None))
     return out
 

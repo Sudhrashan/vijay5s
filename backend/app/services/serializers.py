@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from app.models import CATEGORIES, Audit, AuditResponse, Checkpoint, Issue, User, Zone
+from app.models import CATEGORIES, Audit, Finding, Issue, User, Zone
 
 
 def days_open(i: Issue, now: datetime | None = None) -> int:
@@ -16,11 +16,11 @@ def user_out(u: User) -> dict:
     }
 
 
-def zone_out(z: Zone, open_: int = 0, closed: int = 0, score: int | None = None, avg: float | None = None) -> dict:
+def zone_out(z: Zone, open_: int = 0, closed: int = 0, findings: int = 0, avg: float | None = None) -> dict:
     return {
         "id": z.id, "name": z.name, "checkpoints": z.checkpoints,
         "incharge_id": z.incharge_id, "incharge": z.incharge.name if z.incharge else None,
-        "qr_token": z.qr_token, "open": open_, "closed": closed, "score": score, "avg_closure": avg,
+        "qr_token": z.qr_token, "open": open_, "closed": closed, "findings": findings, "avg_closure": avg,
     }
 
 
@@ -38,14 +38,11 @@ def issue_out(i: Issue, repeat: int = 1) -> dict:
     }
 
 
-def checkpoint_out(c: Checkpoint) -> dict:
-    return {"id": c.id, "category": c.category, "order": c.order, "text": c.text}
-
-
-def audit_response_out(r: AuditResponse) -> dict:
+def finding_out(f: Finding) -> dict:
     return {
-        "id": r.id, "checkpoint_id": r.checkpoint_id, "category": r.checkpoint.category,
-        "score": float(r.score), "photo_url": r.photo_url,
+        "id": f.id, "audit_id": f.audit_id, "category": f.category,
+        "remark": f.remark, "photo_url": f.photo_url,
+        "recorded_at": f.recorded_at.isoformat(timespec="minutes") if f.recorded_at else None,
     }
 
 
@@ -54,7 +51,7 @@ def audit_out(a: Audit, today: date | None = None) -> dict:
         "id": a.id, "zone_id": a.zone_id, "zone": a.zone.name, "cycle": a.cycle,
         "planned_date": a.planned_date.isoformat(),
         "status": a.display_status(today or date.today()),
-        "score": a.score, "missed_reason": a.missed_reason,
+        "missed_reason": a.missed_reason,
         "auditors": [{"id": u.id, "name": u.name} for u in a.auditors],
         "submitted_by": a.submitted_by.name if a.submitted_by else None,
         "submitted_by_id": a.submitted_by_id,

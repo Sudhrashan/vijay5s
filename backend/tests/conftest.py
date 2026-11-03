@@ -12,10 +12,9 @@ Design notes
 - Each test function gets its own throwaway SQLite file. We point DATABASE_URL at a fresh
   temp file per test and call `app.main.run_migrations()` (the project's own Alembic
   migration entrypoint, the single source of truth for schema per CLAUDE.md) rather than
-  `Base.metadata.create_all`, because one of the Alembic migrations
-  (5b74110c8aef_seed_5s_checkpoints) seeds the 34 fixed 5S checklist questions that
-  `app/api/routes/audits.py` depends on (CHECKLIST_MAX = 68 = 34 x 2). create_all would
-  skip that data seed and break any audit-scoring test.
+  `Base.metadata.create_all`, so schema always matches the latest migration chain
+  (checkpoints/score have been dropped in favour of the findings table -- see
+  b1f2a9c0d731_findings_replace_checklist).
 - SEED_ON_START is forced to "false" so FastAPI's lifespan does not run app.db.seed.seed()
   (which would collide with/duplicate whatever a test sets up). Tests that want a realistic
   dataset call `app.db.seed.seed()` explicitly via the `seeded_db` fixture.

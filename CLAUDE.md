@@ -41,7 +41,7 @@ Status key: DRAFTED = code exists but is untested in a browser. STUB = placehold
 | 9 | Settings (escalation, targets, toggles) | routes/settings.py (done) | pages/Settings.tsx | DRAFTED; API tested |
 | 10 | Notifications (email/WhatsApp on escalation, assignment) | hook points marked in services/escalation.py, routes/audits.py | — | TODO |
 | 11 | Production hardening (Alembic migrations — done; S3/Blob photo storage, rate limit, tests) | Alembic set up, see backend/alembic/ | — | PARTIAL |
-| 12 | Auditor mobile app (checklist, photos) | routes/audits.py: GET /checkpoints, POST /audits/{id}/responses(+/photo) | frontend/src/auditor/* | DRAFTED; API tested |
+| 12 | Auditor mobile app (photo + 1S-5S category + remark findings) | routes/audits.py: POST /audits/{id}/findings (multipart), GET /audits/{id}/findings, POST /audits/{id}/complete | frontend/src/auditor/* | DRAFTED; API tested |
 | 13 | 5S Incharge mobile app (my zone, close/verify issues, reports) | reuses routes/issues.py, routes/reports.py (no new backend) | frontend/src/incharge/* | DRAFTED; API tested |
 
 ## Per-module checklist (do this for each row above)
@@ -59,9 +59,17 @@ Status key: DRAFTED = code exists but is untested in a browser. STUB = placehold
 ## Known gaps to decide on
 - Auditor mobile flow is built (frontend/src/auditor/*) but deliberately excludes QR-scan-to-open-zone and GPS photo
   stamping — descoped by the user. `require_qr`/`gps_stamp` toggles exist in Settings but nothing enforces them yet.
-- Checkpoint-level audit scoring is now automatic: the 34-question ROE004 checklist (backend/app/models/checkpoint.py,
-  seeded via Alembic) drives `Audit.score` via `POST /api/audits/{id}/responses` (sum/68*100). Manual score entry
-  (`AuditPatch.score`) still exists as a fallback/override path, not the primary flow any more.
+- The 34-question ROE004 scored checklist has been removed entirely. There is no numeric audit score anywhere. The
+  auditor flow is now: take a photo, tag it with a 1S-5S category, add a mandatory remark, tap "Add finding"
+  (`POST /api/audits/{id}/findings`, multipart: `photo` file + `category` + `remark` form fields, one call per
+  photo -- each creates a `Finding` row immediately, found in `backend/app/models/finding.py`). Submitting the audit
+  is a separate `POST /api/audits/{id}/complete` (empty body) that requires at least one finding to exist and uses
+  the same race-safe "only one auditor's submit wins" conditional UPDATE as before. The Dashboard's old "Zone 5S
+  scorecard" score/colour-band column is now a plain "Findings this cycle" count
+  (`app/services/stats.zone_finding_counts`), with no colour coding. The admin Audits calendar's audit modal
+  (`frontend/src/pages/Audits.tsx`) shows the findings (photo thumbnail + category + remark) logged against an
+  audit, read-only, via the same `GET /api/audits/{id}/findings` route; the old manual "5S score (%)" field and
+  admin "Mark completed" override are gone -- an audit is completed only via the auditor's own `/complete` call.
 - Emails/WhatsApp: only hook points exist (module 10, still TODO).
 - No live browser click-through has been done yet for modules 6-13 — all verification so far is `tsc --noEmit` +
   direct Python calls against route functions (no running uvicorn + browser session). Do this before considering any

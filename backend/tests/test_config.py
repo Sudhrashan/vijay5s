@@ -56,7 +56,7 @@ def test_blank_supabase_values_mean_disabled():
 def test_seed_without_demo_data_creates_only_super_admin(db_session):
     from app.core.config import settings
     from app.db.seed import seed
-    from app.models import Audit, Checkpoint, Issue, User, Zone
+    from app.models import Audit, Issue, User, Zone
 
     assert seed(db_session, demo=False) is True
     users = db_session.query(User).all()
@@ -65,7 +65,6 @@ def test_seed_without_demo_data_creates_only_super_admin(db_session):
     assert db_session.query(Zone).count() == 0
     assert db_session.query(Issue).count() == 0
     assert db_session.query(Audit).count() == 0
-    assert db_session.query(Checkpoint).count() == 34  # from the Alembic migration, not seed
     assert seed(db_session, demo=False) is False  # idempotent on a non-empty DB
 
 

@@ -9,7 +9,7 @@ export type LiveState = "connecting" | "live" | "offline";
 // Which cached queries each server event makes stale. Pages refetch only what changed.
 const INVALIDATES: Record<string, string[]> = {
   issue: ["issues", "dashboard", "reports", "zones", "meta"],
-  audit: ["audits", "audit-responses", "dashboard", "reports", "meta"],
+  audit: ["audits", "findings", "dashboard", "reports", "meta"],
   allocation: ["audits", "dashboard"],
   user: ["users", "meta", "zones", "dashboard"],
   zone: ["zones", "meta", "dashboard"],

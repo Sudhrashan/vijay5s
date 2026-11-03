@@ -1,5 +1,7 @@
 from datetime import date, timedelta
 
+PHOTO = ("p.png", b"\x89PNG\r\n\x1a\n", "image/png")
+
 
 def _future_zone_and_auditor(client, headers):
     zones = client.get("/api/zones", headers=headers).json()
@@ -9,30 +11,101 @@ def _future_zone_and_auditor(client, headers):
     return zone, auditor
 
 
-def test_auditor_can_only_submit_assigned_audits(client, seeded_db, auditor_headers):
+def _add_finding(client, headers, audit_id, category="1S", remark="Pallets blocking aisle"):
+    return client.post(f"/api/audits/{audit_id}/findings", headers=headers,
+                       data={"category": category, "remark": remark}, files={"photo": PHOTO})
+
+
+def test_auditor_can_only_log_findings_on_assigned_audits(client, seeded_db, auditor_headers):
     me = client.get("/api/auth/me", headers=auditor_headers).json()["id"]
     audits = client.get("/api/audits", headers=auditor_headers).json()["items"]
     open_ = [a for a in audits if a["status"] != "Completed"]
     not_mine = next(a for a in open_ if me not in [u["id"] for u in a["auditors"]])
     mine = next(a for a in open_ if me in [u["id"] for u in a["auditors"]])
-    cps = client.get("/api/checkpoints", headers=auditor_headers).json()["items"]
-    body = {"responses": [{"checkpoint_id": c["id"], "score": 2} for c in cps]}
 
-    denied = client.post(f"/api/audits/{not_mine['id']}/responses", headers=auditor_headers, json=body)
+    denied = _add_finding(client, auditor_headers, not_mine["id"])
     assert denied.status_code == 403
-    allowed = client.post(f"/api/audits/{mine['id']}/responses", headers=auditor_headers, json=body)
-    assert allowed.status_code == 200
+    allowed = _add_finding(client, auditor_headers, mine["id"])
+    assert allowed.status_code == 201
+    body = allowed.json()
+    assert body["category"] == "1S" and body["remark"] == "Pallets blocking aisle" and body["photo_url"]
 
-    # Photos follow the same rule, and are accepted once the score exists.
-    photo = ("p.png", b"\x89PNG\r\n\x1a\n", "image/png")
-    cp = cps[0]["id"]
-    assert client.post(f"/api/audits/{not_mine['id']}/responses/{cp}/photo", headers=auditor_headers,
-                       files={"photo": photo}).status_code == 403
-    assert client.post(f"/api/audits/{mine['id']}/responses/{cp}/photo", headers=auditor_headers,
-                       files={"photo": photo}).status_code == 200
+    assert client.post(f"/api/audits/{not_mine['id']}/complete", headers=auditor_headers).status_code == 403
 
 
-def test_two_auditors_on_one_zone_only_first_submit_counts(client, seeded_db, admin_headers):
+def test_finding_requires_photo_category_and_remark(client, seeded_db, incharge_headers):
+    zone, auditor = _future_zone_and_auditor(client, incharge_headers)
+    scheduled = client.post("/api/audits", headers=incharge_headers,
+                            json={"zone_id": zone["id"], "planned_date": str(date.today() + timedelta(days=5)),
+                                  "auditor_ids": [auditor["id"]]}).json()
+    aid = scheduled["id"]
+
+    # Missing photo
+    resp = client.post(f"/api/audits/{aid}/findings", headers=incharge_headers,
+                       data={"category": "1S", "remark": "Some remark here"})
+    assert resp.status_code == 422
+
+    # Bad category
+    resp = client.post(f"/api/audits/{aid}/findings", headers=incharge_headers,
+                       data={"category": "9S", "remark": "Some remark here"}, files={"photo": PHOTO})
+    assert resp.status_code == 422
+
+    # Remark too short
+    resp = client.post(f"/api/audits/{aid}/findings", headers=incharge_headers,
+                       data={"category": "1S", "remark": "ab"}, files={"photo": PHOTO})
+    assert resp.status_code == 422
+
+    # Missing remark entirely
+    resp = client.post(f"/api/audits/{aid}/findings", headers=incharge_headers,
+                       data={"category": "1S"}, files={"photo": PHOTO})
+    assert resp.status_code == 422
+
+
+def test_complete_fails_with_zero_findings(client, seeded_db, incharge_headers):
+    zone, auditor = _future_zone_and_auditor(client, incharge_headers)
+    scheduled = client.post("/api/audits", headers=incharge_headers,
+                            json={"zone_id": zone["id"], "planned_date": str(date.today() + timedelta(days=5)),
+                                  "auditor_ids": [auditor["id"]]}).json()
+    resp = client.post(f"/api/audits/{scheduled['id']}/complete", headers=incharge_headers)
+    assert resp.status_code == 400
+
+
+def test_log_findings_then_complete(client, seeded_db, incharge_headers):
+    zone, auditor = _future_zone_and_auditor(client, incharge_headers)
+    scheduled = client.post("/api/audits", headers=incharge_headers,
+                            json={"zone_id": zone["id"], "planned_date": str(date.today() + timedelta(days=5)),
+                                  "auditor_ids": [auditor["id"]]}).json()
+    aid = scheduled["id"]
+    assert _add_finding(client, incharge_headers, aid, "1S", "Unused pallets in aisle").status_code == 201
+    assert _add_finding(client, incharge_headers, aid, "3S", "Oil leak near machine").status_code == 201
+
+    listed = client.get(f"/api/audits/{aid}/findings", headers=incharge_headers).json()["items"]
+    assert len(listed) == 2
+    assert listed[0]["category"] == "1S" and listed[1]["category"] == "3S"
+
+    resp = client.post(f"/api/audits/{aid}/complete", headers=incharge_headers)
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["status"] == "Completed"
+    assert "score" not in body
+
+
+def test_complete_blocked_once_completed(client, seeded_db, incharge_headers):
+    zone, auditor = _future_zone_and_auditor(client, incharge_headers)
+    scheduled = client.post("/api/audits", headers=incharge_headers,
+                            json={"zone_id": zone["id"], "planned_date": str(date.today() + timedelta(days=5)),
+                                  "auditor_ids": [auditor["id"]]}).json()
+    aid = scheduled["id"]
+    _add_finding(client, incharge_headers, aid)
+    first = client.post(f"/api/audits/{aid}/complete", headers=incharge_headers)
+    assert first.status_code == 200
+
+    second = client.post(f"/api/audits/{aid}/complete", headers=incharge_headers)
+    assert second.status_code == 409
+    assert "already been submitted" in second.json()["detail"].lower()
+
+
+def test_two_auditors_on_one_zone_only_first_complete_counts(client, seeded_db, admin_headers):
     from tests.conftest import _login
     from app.core.config import settings
     users = client.get("/api/users", headers=admin_headers).json()
@@ -41,31 +114,27 @@ def test_two_auditors_on_one_zone_only_first_submit_counts(client, seeded_db, ad
     audit = client.post("/api/audits", headers=admin_headers,
                         json={"zone_id": zone["id"], "planned_date": str(date.today() + timedelta(days=3)),
                               "auditor_ids": [a1["id"], a2["id"]]}).json()
-    cps = client.get("/api/checkpoints", headers=admin_headers).json()["items"]
+    aid = audit["id"]
     h1 = _login(client, a1["emp_id"], settings.DEFAULT_USER_PASSWORD)
     h2 = _login(client, a2["emp_id"], settings.DEFAULT_USER_PASSWORD)
 
-    first = client.post(f"/api/audits/{audit['id']}/responses", headers=h1,
-                        json={"responses": [{"checkpoint_id": c["id"], "score": 2} for c in cps]})
-    assert first.status_code == 200 and first.json()["score"] == 100
+    assert _add_finding(client, h1, aid).status_code == 201
+
+    first = client.post(f"/api/audits/{aid}/complete", headers=h1)
+    assert first.status_code == 200
     assert first.json()["submitted_by"] == a1["name"] and first.json()["completed_at"]
-    second = client.post(f"/api/audits/{audit['id']}/responses", headers=h2,
-                         json={"responses": [{"checkpoint_id": c["id"], "score": 0} for c in cps]})
+
+    second = client.post(f"/api/audits/{aid}/complete", headers=h2)
     assert second.status_code == 409
     assert f"by {a1['name']}" in second.json()["detail"]
+
     # The partner's Home list shows who submitted it.
     listed = client.get("/api/audits", headers=h2, params={"cycle": audit["cycle"]}).json()["items"]
-    assert next(x for x in listed if x["id"] == audit["id"])["submitted_by_id"] == a1["id"]
-    saved = client.get(f"/api/audits/{audit['id']}/responses", headers=h2).json()["items"]
-    assert len(saved) == 34 and all(r["score"] == 2 for r in saved)  # partner's scores were not overwritten
+    assert next(x for x in listed if x["id"] == aid)["submitted_by_id"] == a1["id"]
 
-
-def test_list_checkpoints(client, seeded_db, auditor_headers):
-    resp = client.get("/api/checkpoints", headers=auditor_headers)
-    assert resp.status_code == 200
-    body = resp.json()
-    assert body["max_score"] == 68
-    assert len(body["items"]) == 34
+    # Findings logged by the first auditor are still there and were not touched.
+    saved = client.get(f"/api/audits/{aid}/findings", headers=h2).json()["items"]
+    assert len(saved) == 1
 
 
 def test_list_audits_current_cycle(client, seeded_db, auditor_headers):
@@ -73,6 +142,7 @@ def test_list_audits_current_cycle(client, seeded_db, auditor_headers):
     assert resp.status_code == 200
     body = resp.json()
     assert "items" in body and "cycle" in body
+    assert "score" not in body["items"][0]
 
 
 def test_schedule_audit_requires_staff(client, seeded_db, auditor_headers):
@@ -146,82 +216,8 @@ def test_patch_audit_invalid_status_rejected(client, seeded_db, incharge_headers
 
 
 def test_patch_audit_not_found(client, seeded_db, incharge_headers):
-    resp = client.patch("/api/audits/999999", headers=incharge_headers, json={"score": 90})
+    resp = client.patch("/api/audits/999999", headers=incharge_headers, json={"missed_reason": "x"})
     assert resp.status_code == 404
-
-
-def _checkpoint_ids(client, headers):
-    items = client.get("/api/checkpoints", headers=headers).json()["items"]
-    return [c["id"] for c in items]
-
-
-def test_submit_audit_responses_computes_score(client, seeded_db, incharge_headers):
-    zone, auditor = _future_zone_and_auditor(client, incharge_headers)
-    scheduled = client.post("/api/audits", headers=incharge_headers,
-                            json={"zone_id": zone["id"], "planned_date": str(date.today() + timedelta(days=5)),
-                                  "auditor_ids": [auditor["id"]]}).json()
-    cps = _checkpoint_ids(client, incharge_headers)
-    assert len(cps) == 34
-    # Max score on every checkpoint -> 34 * 2 = 68 -> 100%.
-    responses = [{"checkpoint_id": cid, "score": 2} for cid in cps]
-    resp = client.post(f"/api/audits/{scheduled['id']}/responses", headers=incharge_headers, json={"responses": responses})
-    assert resp.status_code == 200
-    body = resp.json()
-    assert body["status"] == "Completed"
-    assert body["score"] == 100
-
-    get_resp = client.get(f"/api/audits/{scheduled['id']}/responses", headers=incharge_headers)
-    assert get_resp.status_code == 200
-    assert len(get_resp.json()["items"]) == 34
-
-
-def test_submit_audit_responses_partial_score(client, seeded_db, incharge_headers):
-    zone, auditor = _future_zone_and_auditor(client, incharge_headers)
-    scheduled = client.post("/api/audits", headers=incharge_headers,
-                            json={"zone_id": zone["id"], "planned_date": str(date.today() + timedelta(days=5)),
-                                  "auditor_ids": [auditor["id"]]}).json()
-    cps = _checkpoint_ids(client, incharge_headers)
-    # Score 1 (half of 2) on every checkpoint -> 50%.
-    responses = [{"checkpoint_id": cid, "score": 1} for cid in cps]
-    resp = client.post(f"/api/audits/{scheduled['id']}/responses", headers=incharge_headers, json={"responses": responses})
-    assert resp.status_code == 200
-    assert resp.json()["score"] == 50
-
-
-def test_submit_audit_responses_rejects_invalid_checkpoint(client, seeded_db, incharge_headers):
-    zone, auditor = _future_zone_and_auditor(client, incharge_headers)
-    scheduled = client.post("/api/audits", headers=incharge_headers,
-                            json={"zone_id": zone["id"], "planned_date": str(date.today() + timedelta(days=5)),
-                                  "auditor_ids": [auditor["id"]]}).json()
-    resp = client.post(f"/api/audits/{scheduled['id']}/responses", headers=incharge_headers,
-                        json={"responses": [{"checkpoint_id": 999999, "score": 2}]})
-    assert resp.status_code == 400
-
-
-def test_submit_audit_responses_rejects_invalid_score(client, seeded_db, incharge_headers):
-    zone, auditor = _future_zone_and_auditor(client, incharge_headers)
-    scheduled = client.post("/api/audits", headers=incharge_headers,
-                            json={"zone_id": zone["id"], "planned_date": str(date.today() + timedelta(days=5)),
-                                  "auditor_ids": [auditor["id"]]}).json()
-    cps = _checkpoint_ids(client, incharge_headers)
-    resp = client.post(f"/api/audits/{scheduled['id']}/responses", headers=incharge_headers,
-                        json={"responses": [{"checkpoint_id": cps[0], "score": 1.25}]})
-    assert resp.status_code == 422
-
-
-def test_submit_audit_responses_blocked_once_completed(client, seeded_db, incharge_headers):
-    zone, auditor = _future_zone_and_auditor(client, incharge_headers)
-    scheduled = client.post("/api/audits", headers=incharge_headers,
-                            json={"zone_id": zone["id"], "planned_date": str(date.today() + timedelta(days=5)),
-                                  "auditor_ids": [auditor["id"]]}).json()
-    cps = _checkpoint_ids(client, incharge_headers)
-    responses = [{"checkpoint_id": cid, "score": 2} for cid in cps]
-    first = client.post(f"/api/audits/{scheduled['id']}/responses", headers=incharge_headers, json={"responses": responses})
-    assert first.status_code == 200
-
-    second = client.post(f"/api/audits/{scheduled['id']}/responses", headers=incharge_headers, json={"responses": responses})
-    assert second.status_code == 409
-    assert "already been submitted" in second.json()["detail"].lower()
 
 
 def test_allocation_save_replaces_not_adds(client, seeded_db, incharge_headers):

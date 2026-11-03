@@ -3,7 +3,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import QRCode from "qrcode";
 import { api } from "../api/client";
 import type { User, Zone } from "../api/types";
-import { Ring } from "../components/Charts";
 import { IC, Icon } from "../components/Icons";
 import { ErrorBox, Field, Loading, Modal, PageHead } from "../components/UI";
 import { useAuth } from "../lib/auth";
@@ -30,13 +29,13 @@ export default function ZonesPage() {
       <div className="zgrid">
         {data.map((z) => (
           <div className="zone" key={z.id}>
-            <Ring score={z.score} color="var(--blue)" />
             <div className="zn">{z.name}</div>
             <div className="zm">{z.checkpoints} checkpoints</div>
             <div className="zm">Incharge: {z.incharge ?? "Unassigned"}</div>
             <div className="zstats">
               <div className="zs">Open<b style={{ color: "var(--red)" }}>{z.open}</b></div>
               <div className="zs">Closed<b style={{ color: "var(--green)" }}>{z.closed}</b></div>
+              <div className="zs">Findings<b>{z.findings}</b></div>
               <div className="zs">Avg closure<b>{z.avg_closure != null ? `${z.avg_closure} d` : "—"}</b></div>
             </div>
             {admin && (

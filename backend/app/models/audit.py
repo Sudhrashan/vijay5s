@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from sqlalchemy import Column, Date, DateTime, ForeignKey, Integer, String, Table, Text
+from sqlalchemy import Column, Date, DateTime, ForeignKey, String, Table, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
@@ -24,7 +24,6 @@ class Audit(Base):
     cycle: Mapped[str] = mapped_column(String(7), index=True)  # YYYY-MM
     planned_date: Mapped[date] = mapped_column(Date, index=True)
     status: Mapped[str] = mapped_column(String(12), default="Scheduled")
-    score: Mapped[int | None] = mapped_column(Integer)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime)
     missed_reason: Mapped[str | None] = mapped_column(Text)
     # Who marked it Completed -- with two auditors on a zone, shows the partner it is already done.

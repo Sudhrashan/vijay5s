@@ -4,7 +4,7 @@ def test_list_zones_any_role(client, seeded_db, auditor_headers):
     zones = resp.json()
     assert len(zones) == 11  # matches ZONES in app/db/seed.py
     sample = zones[0]
-    assert set(["id", "name", "checkpoints", "qr_token", "open", "closed", "score", "avg_closure"]) <= set(sample)
+    assert set(["id", "name", "checkpoints", "qr_token", "open", "closed", "findings", "avg_closure"]) <= set(sample)
 
 
 def test_create_zone_admin_only(client, seeded_db, incharge_headers):

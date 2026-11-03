@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.core.security import hash_password
 from app.db.session import SessionLocal
-from app.models import Audit, Issue, User, Zone
+from app.models import Audit, Finding, Issue, User, Zone
 from app.services.stats import current_cycle, shift
 
 ZONES = [  # name, checkpoints, incharge emp_id, relative issue weight, base score
@@ -107,14 +107,20 @@ def seed(db: Session, demo: bool | None = None) -> bool:
                     hit = rnd.random() < 0.62 + ci * 0.05
                     if hit:
                         a.status, a.completed_at = "Completed", datetime.combine(planned, datetime.min.time()) + timedelta(hours=10)
-                        a.score = max(55, min(99, base - (5 - ci) + rnd.randint(-3, 3)))
                         a.submitted_by = team[0]
                     else:
                         a.status, a.missed_reason = "Missed", None
                 db.add(a)
                 if a.status != "Completed":
                     continue
+                db.flush()  # need a.id for the Finding rows below
                 n = max(0, round(rnd.gauss(weight / 9, 1.2)))
+                # Demo findings logged during this completed audit (photo+category+remark).
+                n_findings = max(1, min(4, round(rnd.gauss(2, 1))))
+                for _ in range(n_findings):
+                    cat = rnd.choices(list(FINDINGS), CAT_WEIGHTS)[0]
+                    db.add(Finding(audit_id=a.id, category=cat,
+                                   remark=rnd.choice(FINDINGS[cat]), photo_url="/uploads/demo-finding.jpg"))
                 for _ in range(n):
                     cat = rnd.choices(list(FINDINGS), CAT_WEIGHTS)[0]
                     raised = a.completed_at + timedelta(minutes=rnd.randint(5, 90))

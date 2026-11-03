@@ -7,7 +7,7 @@ import { IC } from "../components/Icons";
 import { ErrorBox, Kpi, Loading, PageHead, Pill } from "../components/UI";
 import { useAuth } from "../lib/auth";
 import { useCycle } from "../lib/cycle";
-import { ini, monthName, scoreColor, scorePill, shortMonth, statusPill } from "../lib/format";
+import { ini, monthName, shortMonth, statusPill } from "../lib/format";
 import { useToast } from "../lib/toast";
 
 const AGE_COLORS = ["var(--green)", "var(--amber)", "#E86C1A", "var(--red)"];
@@ -83,9 +83,8 @@ export default function Dashboard() {
           <h3>Zone-wise open issues</h3>
           <div className="note">Click a zone to open its issue register</div>
           {zrows.length === 0 && <div className="empty">No open issues in any zone.</div>}
-          {zrows.map((z) => <BarRow key={z.id} name={z.name} value={z.open} max={zrows[0].open} color={scoreColor(z.score, d.min_score)}
-            tip={`<b>${z.name}</b><br>${z.open} open · 5S score ${z.score}%`} onClick={() => nav(`/issues?zone=${z.id}&status=Open`)} />)}
-          <div className="demo" style={{ marginTop: 12 }}>Bar colour is the zone’s 5S score band, not its issue count.</div>
+          {zrows.map((z) => <BarRow key={z.id} name={z.name} value={z.open} max={zrows[0].open}
+            tip={`<b>${z.name}</b><br>${z.open} open · ${z.findings} findings this cycle`} onClick={() => nav(`/issues?zone=${z.id}&status=Open`)} />)}
         </div>
         <div className="card">
           <h3>Issue ageing</h3>
@@ -115,17 +114,13 @@ export default function Dashboard() {
         </div>
         <div className="card">
           <h3>Zone 5S scorecard</h3>
-          <div className="note legend" style={{ gap: 14 }}>
-            <span><i style={{ background: "var(--green)" }} />90 and above</span>
-            <span><i style={{ background: "var(--amber)" }} />{d.min_score}–89</span>
-            <span><i style={{ background: "var(--red)" }} />below {d.min_score}</span>
-          </div>
+          <div className="note">Findings this cycle = photos logged by auditors across that zone's completed audits</div>
           <div className="tw"><table>
-            <thead><tr><th>Zone</th><th>Incharge</th><th className="num">Open</th><th className="num">Closed</th><th className="num">Score</th></tr></thead>
-            <tbody>{[...d.zones].sort((a, b) => b.score - a.score).map((z) => (
+            <thead><tr><th>Zone</th><th>Incharge</th><th className="num">Open</th><th className="num">Closed</th><th className="num">Findings this cycle</th></tr></thead>
+            <tbody>{[...d.zones].sort((a, b) => b.findings - a.findings).map((z) => (
               <tr key={z.id}><td className="strong">{z.name}</td><td className="rowsub">{z.incharge}</td>
                 <td className="num">{z.open}</td><td className="num">{z.closed}</td>
-                <td className="num"><Pill cls={scorePill(z.score, d.min_score)}>{z.score}%</Pill></td></tr>))}
+                <td className="num">{z.findings}</td></tr>))}
             </tbody></table></div>
         </div>
       </div>

@@ -77,7 +77,6 @@ class AuditIn(BaseModel):
 class AuditPatch(BaseModel):
     planned_date: date | None = None
     status: str | None = None
-    score: int | None = Field(default=None, ge=0, le=100)
     missed_reason: str | None = None
 
 
@@ -94,17 +93,15 @@ class CycleIn(BaseModel):
     cycle: str = Field(pattern=r"^\d{4}-\d{2}$")
 
 
-class AuditResponseIn(BaseModel):
-    checkpoint_id: int
-    score: float
+class FindingIn(BaseModel):
+    """Validates the category/remark form fields of a POST /audits/{id}/findings multipart
+    request. The photo itself arrives as UploadFile, not through this model."""
+    category: str
+    remark: str = Field(min_length=3)
 
-    @field_validator("score")
+    @field_validator("category")
     @classmethod
-    def valid_score(cls, v: float) -> float:
-        if v not in (0, 0.5, 1, 1.5, 2):
-            raise ValueError("score must be 0, 0.5, 1, 1.5 or 2")
+    def valid_cat(cls, v: str) -> str:
+        if v not in ("1S", "2S", "3S", "4S", "5S"):
+            raise ValueError("category must be 1S to 5S")
         return v
-
-
-class AuditSubmitIn(BaseModel):
-    responses: list[AuditResponseIn] = Field(min_length=1)

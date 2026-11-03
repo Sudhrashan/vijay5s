@@ -3,10 +3,51 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../api/client";
 import { useAuth } from "../lib/auth";
-import type { Issue } from "../api/types";
+import { useServerCycle } from "../lib/cycle";
+import { auditPill, submittedLine } from "../lib/format";
+import type { Audit, AuditsResponse, Finding, Issue } from "../api/types";
 
 type FilterKey = "All" | "Open" | "Closed" | "Overdue";
 const FILTERS: FilterKey[] = ["All", "Open", "Closed", "Overdue"];
+
+/** Read-only block showing one audit's live findings (photo + category + remark), for the
+ * 5S Incharge — same visual pattern as Audits.tsx's AuditModal / AuditorCapture.tsx. */
+function ZoneAuditFindings({ audit }: { audit: Audit }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ["findings", audit.id],
+    queryFn: () => api.get<{ items: Finding[] }>(`/audits/${audit.id}/findings`),
+  });
+  const findings = data?.items ?? [];
+
+  return (
+    <div className="i-card">
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+        <span className={`i-badge ${auditPill(audit.status) === "p-green" ? "i-badge-closed" : "i-badge-open"}`}>
+          {audit.status}
+        </span>
+        <span className="i-section-label">{findings.length} finding{findings.length === 1 ? "" : "s"}</span>
+      </div>
+      {audit.submitted_by && (
+        <p className="i-issue-sub" style={{ marginBottom: 8 }}>Submitted by {submittedLine(audit)}</p>
+      )}
+      {isLoading && <div className="i-issue-sub">Loading findings…</div>}
+      {!isLoading && findings.length === 0 && <div className="i-issue-sub">No findings logged yet.</div>}
+      {!isLoading && findings.length > 0 && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {findings.map((f) => (
+            <div key={f.id} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+              <img src={f.photo_url} alt="Finding" style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 8, flexShrink: 0, border: "1px solid var(--i-outline-variant)" }} />
+              <div style={{ minWidth: 0 }}>
+                <span className="i-badge i-badge-open" style={{ background: "rgba(11,95,165,0.12)", color: "var(--i-primary-container)" }}>{f.category}</span>
+                <p style={{ margin: "4px 0 0", fontSize: 13 }}>{f.remark}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function InchargeHome() {
   const { user } = useAuth();
@@ -18,6 +59,14 @@ export default function InchargeHome() {
     queryFn: () => api.get<{ total: number; items: Issue[] }>("/issues", { zone_id: user?.zone_id }),
     enabled: !!user?.zone_id,
   });
+
+  const { cycle } = useServerCycle();
+  const { data: auditsData, isLoading: auditsLoading } = useQuery({
+    queryKey: ["audits", cycle],
+    queryFn: () => api.get<AuditsResponse>("/audits", { cycle }),
+    enabled: !!cycle && !!user?.zone_id,
+  });
+  const zoneAudits = (auditsData?.items ?? []).filter((a) => a.zone_id === user?.zone_id);
 
   const items = data?.items ?? [];
   const open = items.filter((i) => i.status === "Open");
@@ -68,6 +117,19 @@ export default function InchargeHome() {
             <span className="i-summary-value" style={{ color: "var(--i-green)" }}>{closed.length}</span>
             <span className="i-summary-label">Closed</span>
           </div>
+        </div>
+
+        <div>
+          <div className="i-section-label" style={{ marginBottom: 8 }}>This cycle's audit findings</div>
+          {auditsLoading && <div className="i-card i-empty">Loading…</div>}
+          {!auditsLoading && zoneAudits.length === 0 && (
+            <div className="i-card i-empty">No audit scheduled for your zone this cycle.</div>
+          )}
+          {!auditsLoading && zoneAudits.length > 0 && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {zoneAudits.map((a) => <ZoneAuditFindings key={a.id} audit={a} />)}
+            </div>
+          )}
         </div>
 
         <div className="i-filter-row">

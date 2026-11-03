@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { api } from "../api/client";
-import type { Audit } from "../api/types";
+import type { Audit, Finding } from "../api/types";
 import { ErrorBox, Field, Loading, Modal, PageHead, Pill } from "../components/UI";
 import { useAuth } from "../lib/auth";
 import { useCycle } from "../lib/cycle";
@@ -54,7 +54,7 @@ export default function Audits() {
               <div className="dn">{d}</div>
               {(byDay[d] || []).map((a) => (
                 <button key={a.id} className={`ev ${EV[a.status]}`} style={{ border: 0, textAlign: "left", cursor: "pointer", font: "inherit", fontSize: 11, fontWeight: 600 }}
-                  onClick={() => setOpen(a)} data-tip={`<b>${a.zone}</b><br>${a.status}${a.score != null ? ` · score ${a.score}%` : ""}`}>{a.zone}</button>))}
+                  onClick={() => setOpen(a)} data-tip={`<b>${a.zone}</b><br>${a.status}`}>{a.zone}</button>))}
             </div>))}
         </div>
       </div>
@@ -80,7 +80,6 @@ export default function Audits() {
 
 function AuditModal({ audit, staff, onClose, onDone }: { audit: Audit; staff: boolean; onClose: () => void; onDone: (m: string) => void }) {
   const [date, setDate] = useState(audit.planned_date);
-  const [score, setScore] = useState(audit.score?.toString() ?? "");
   const [reason, setReason] = useState(audit.missed_reason ?? "");
   const [err, setErr] = useState("");
   const save = useMutation({
@@ -88,12 +87,18 @@ function AuditModal({ audit, staff, onClose, onDone }: { audit: Audit; staff: bo
     onSuccess: (a) => onDone(`${a.zone} audit saved — ${a.status.toLowerCase()}`),
     onError: (e: Error) => setErr(e.message),
   });
+  // Completion itself happens from the auditor's phone (findings + Submit Audit), not here.
+  const { data: findingsData, isLoading: findingsLoading } = useQuery({
+    queryKey: ["findings", audit.id],
+    queryFn: () => api.get<{ items: Finding[] }>(`/audits/${audit.id}/findings`),
+  });
+  const findings = findingsData?.items ?? [];
+
   return (
     <Modal title={`${audit.zone} audit`} onClose={onClose}
       footer={staff && <>
         <button className="btn ghost" onClick={() => save.mutate({ planned_date: date })}>Reschedule</button>
         <button className="btn ghost" onClick={() => save.mutate({ status: "Missed", missed_reason: reason })}>Mark missed</button>
-        <button className="btn" onClick={() => save.mutate({ status: "Completed", score: Number(score) })} disabled={!score}>Mark completed</button>
       </>}>
       <dl className="kv">
         <dt>Status</dt><dd><Pill cls={auditPill(audit.status)}>{audit.status.toUpperCase()}</Pill></dd>
@@ -103,10 +108,31 @@ function AuditModal({ audit, staff, onClose, onDone }: { audit: Audit; staff: bo
       {staff && <>
         <div className="row2">
           <Field label="Planned date"><input type="date" value={date} onChange={(e) => setDate(e.target.value)} /></Field>
-          <Field label="5S score (%)"><input type="text" inputMode="numeric" value={score} onChange={(e) => setScore(e.target.value.replace(/\D/g, "").slice(0, 3))} /></Field>
         </div>
         <Field label="Reason, if missed"><textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Line shutdown, auditor on leave…" /></Field>
       </>}
+
+      <div style={{ marginTop: 16 }}>
+        <div className="a-section-label" style={{ marginBottom: 8, display: "block" }}>
+          Findings {findings.length > 0 ? `(${findings.length})` : ""}
+        </div>
+        {findingsLoading && <div className="note">Loading findings…</div>}
+        {!findingsLoading && findings.length === 0 && <div className="note">No findings logged for this audit yet.</div>}
+        {!findingsLoading && findings.length > 0 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, maxHeight: 320, overflowY: "auto" }}>
+            {findings.map((f) => (
+              <div key={f.id} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                <img src={f.photo_url} alt="Finding" style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 8, flexShrink: 0 }} />
+                <div>
+                  <Pill cls="p-blue">{f.category}</Pill>
+                  <p style={{ margin: "4px 0 0", fontSize: 13 }}>{f.remark}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {err && <div className="err">{err}</div>}
     </Modal>
   );

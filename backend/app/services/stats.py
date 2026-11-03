@@ -8,9 +8,10 @@ import calendar
 from collections import Counter, defaultdict
 from datetime import date, datetime, time
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.models import CATEGORIES, Audit, Issue, User, Zone
+from app.models import CATEGORIES, Audit, Finding, Issue, User, Zone
 from app.services import settings_service
 from app.services.serializers import days_open, issue_out
 
@@ -77,13 +78,17 @@ def month_summary(cycle: str, issues: list[Issue], audits: list[Audit], overdue_
     }
 
 
-def zone_scores(audits: list[Audit], upto: str) -> dict[int, int]:
-    latest: dict[int, Audit] = {}
-    for a in audits:
-        if a.status == "Completed" and a.score is not None and a.cycle <= upto:
-            if a.zone_id not in latest or a.planned_date > latest[a.zone_id].planned_date:
-                latest[a.zone_id] = a
-    return {zid: a.score for zid, a in latest.items()}
+def zone_finding_counts(db: Session, audits: list[Audit], cycle: str) -> dict[int, int]:
+    """Count of findings logged against each zone's completed audits in the given cycle."""
+    cyc_audit_ids = {a.id: a.zone_id for a in audits if a.cycle == cycle and a.status == "Completed"}
+    if not cyc_audit_ids:
+        return {}
+    counts: dict[int, int] = defaultdict(int)
+    rows = (db.query(Finding.audit_id, func.count(Finding.id))
+            .filter(Finding.audit_id.in_(cyc_audit_ids.keys())).group_by(Finding.audit_id).all())
+    for audit_id, n in rows:
+        counts[cyc_audit_ids[audit_id]] += n
+    return dict(counts)
 
 
 def repeat_counts(issues: list[Issue]) -> dict[tuple, int]:
@@ -102,12 +107,13 @@ def dashboard(db: Session, cycle: str) -> dict:
     cur = months[-1]
 
     open_now = [i for i in issues if _open_at(i, end)]
-    scores = zone_scores(audits, cycle)
+    findings = zone_finding_counts(db, audits, cycle)
     zone_open = Counter(i.zone_id for i in open_now)
     zone_closed = Counter(i.zone_id for i in issues if i.closed_at and i.closed_at <= end)
     zone_rows = [{
         "id": z.id, "name": z.name, "incharge": z.incharge.name.split(" ")[0] if z.incharge else "—",
-        "open": zone_open.get(z.id, 0), "closed": zone_closed.get(z.id, 0), "score": scores.get(z.id, 0),
+        "open": zone_open.get(z.id, 0), "closed": zone_closed.get(z.id, 0),
+        "findings": findings.get(z.id, 0),
     } for z in zones]
 
     buckets = [("0–7 days", 0, 7), ("8–15 days", 8, 15), ("16–30 days", 16, 30), ("30+ days", 31, 10**6)]
@@ -152,7 +158,6 @@ def dashboard(db: Session, cycle: str) -> dict:
         "zone_count": len(zones),
         "auditor_count": db.query(User).filter(User.role == "Auditor", User.active.is_(True)).count(),
         "closure_target": cfg["closure_target_days"], "overdue_days": overdue_days,
-        "min_score": cfg["min_score"],
     }
 
 
