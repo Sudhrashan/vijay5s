@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Audit Summary</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed-variant": "#004881",
+                      "on-primary": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "primary-fixed-dim": "#a2c9ff",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary-container": "#c7d7f2",
+                      "surface-tint": "#0e60a6",
+                      "surface-container-highest": "#e0e3e6",
+                      "on-secondary-fixed-variant": "#1d4972",
+                      "on-primary-container": "#bfd9ff",
+                      "primary-fixed": "#d3e4ff",
+                      "secondary-fixed-dim": "#a2cafa",
+                      "on-primary-fixed": "#001c38",
+                      "tertiary-fixed": "#d3e4fe",
+                      "primary": "#00477f",
+                      "tertiary-container": "#4e5e74",
+                      "on-surface": "#181c1e",
+                      "primary-container": "#0b5fa5",
+                      "secondary": "#38618b",
+                      "on-secondary-container": "#2f5982",
+                      "on-error": "#ffffff",
+                      "on-background": "#181c1e",
+                      "outline": "#727782",
+                      "error-container": "#ffdad6",
+                      "on-tertiary-fixed-variant": "#38485d",
+                      "surface": "#f7fafd",
+                      "surface-container-high": "#e5e8eb",
+                      "secondary-container": "#a8cfff",
+                      "inverse-surface": "#2d3133",
+                      "inverse-on-surface": "#eef1f4",
+                      "background": "#f7fafd",
+                      "tertiary-fixed-dim": "#b7c8e1",
+                      "surface-dim": "#d7dadd",
+                      "secondary-fixed": "#d1e4ff",
+                      "surface-variant": "#e0e3e6",
+                      "on-surface-variant": "#414751",
+                      "on-secondary-fixed": "#001d35",
+                      "error": "#ba1a1a",
+                      "surface-bright": "#f7fafd",
+                      "tertiary": "#37465c",
+                      "surface-container": "#ebeef1",
+                      "outline-variant": "#c1c7d2",
+                      "surface-container-low": "#f1f4f7",
+                      "on-error-container": "#93000a",
+                      "inverse-primary": "#a2c9ff",
+                      "on-tertiary-fixed": "#0b1c30"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-gap": "12px",
+                      "section-gap": "24px",
+                      "card-padding": "16px",
+                      "touch-target-min": "56px",
+                      "page-margin": "16px"
+              },
+              "fontFamily": {
+                      "screen-title": [
+                              "Inter"
+                      ],
+                      "button-label": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "data-display": [
+                              "Inter"
+                      ],
+                      "section-label": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "screen-title": [
+                              "22px",
+                              {
+                                      "lineHeight": "28px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "button-label": [
+                              "16px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "15px",
+                              {
+                                      "lineHeight": "22px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "data-display": [
+                              "28px",
+                              {
+                                      "lineHeight": "34px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "section-label": [
+                              "13px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7fafd; /* background */
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Mobile safe area padding for fixed bottom elements */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .pb-safe {
+                padding-bottom: calc(16px + env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-surface antialiased min-h-screen relative">
+<!-- Top App Bar (Mapped from Shared Components JSON with strict content adherence) -->
+<header class="fixed top-0 left-0 w-full z-50 flex items-center px-4 w-full h-[56px] bg-[#073B63] justify-between shadow-none transition-opacity">
+<div class="flex items-center">
+<button class="mr-4 active:opacity-80 transition-opacity hover:bg-primary-container/20 rounded-full p-1 -ml-1 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-[24px]">arrow_back</span>
+</button>
+<h1 class="font-screen-title text-screen-title text-on-primary">Audit Dashboard</h1>
+</div>
+<span class="font-screen-title text-screen-title font-black tracking-tighter text-on-primary">VIJAY</span>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-[72px] pb-[140px] px-page-margin flex flex-col gap-section-gap max-w-2xl mx-auto">
+<!-- Hero Summary Card -->
+<section class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.05)] p-card-padding flex flex-col gap-4 border border-surface-container-high">
+<div class="flex justify-between items-start">
+<div>
+<h2 class="font-button-label text-button-label text-on-surface">Warehouse</h2>
+<p class="font-body-sm text-body-sm text-outline mt-1">26 Aug 2026</p>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-data-display text-data-display text-on-surface">18</span>
+<span class="font-section-label text-section-label text-outline uppercase tracking-widest mt-1">TOTAL ISSUES RAISED</span>
+</div>
+</section>
+<!-- 5S Category Breakdown -->
+<section class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.05)] p-card-padding flex flex-col gap-stack-gap border border-surface-container-high">
+<h3 class="font-section-label text-section-label text-on-surface-variant uppercase tracking-widest mb-2">BY 5S CATEGORY</h3>
+<!-- Category Row: 1S -->
+<div class="flex items-center gap-3 min-h-[32px]">
+<span class="w-6 font-section-label text-section-label text-on-surface">1S</span>
+<div class="flex-1 bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 80%"></div>
+</div>
+<span class="w-6 text-right font-section-label text-section-label text-on-surface">4</span>
+</div>
+<!-- Category Row: 2S -->
+<div class="flex items-center gap-3 min-h-[32px]">
+<span class="w-6 font-section-label text-section-label text-on-surface">2S</span>
+<div class="flex-1 bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 100%"></div>
+</div>
+<span class="w-6 text-right font-section-label text-section-label text-on-surface">5</span>
+</div>
+<!-- Category Row: 3S -->
+<div class="flex items-center gap-3 min-h-[32px]">
+<span class="w-6 font-section-label text-section-label text-on-surface">3S</span>
+<div class="flex-1 bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 60%"></div>
+</div>
+<span class="w-6 text-right font-section-label text-section-label text-on-surface">3</span>
+</div>
+<!-- Category Row: 4S -->
+<div class="flex items-center gap-3 min-h-[32px]">
+<span class="w-6 font-section-label text-section-label text-on-surface">4S</span>
+<div class="flex-1 bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 40%"></div>
+</div>
+<span class="w-6 text-right font-section-label text-section-label text-on-surface">2</span>
+</div>
+<!-- Category Row: 5S -->
+<div class="flex items-center gap-3 min-h-[32px]">
+<span class="w-6 font-section-label text-section-label text-on-surface">5S</span>
+<div class="flex-1 bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 80%"></div>
+</div>
+<span class="w-6 text-right font-section-label text-section-label text-on-surface">4</span>
+</div>
+</section>
+<!-- Issues List -->
+<section class="flex flex-col gap-3">
+<h3 class="font-section-label text-section-label text-on-surface-variant uppercase tracking-widest pl-1">ISSUES</h3>
+<ul class="flex flex-col gap-2">
+<!-- Issue Item 1 -->
+<li class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.05)] p-3 border border-surface-container-high flex items-center gap-4 min-h-touch-target-min">
+<img class="w-[48px] h-[48px] rounded-lg object-cover flex-shrink-0 bg-surface-container" data-alt="A sharp, brightly lit macro photograph of a metallic industrial floor near a large blue manufacturing machine, showing a distinct dark pool of leaked lubricating oil. The environment is highly sanitized, reflecting a modern light-mode factory setting with crisp shadows and clinical precision. The overall mood is sterile but highlights a specific maintenance defect." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGIV2YMSeLnPsnvELHuhKCBkuksBTBLlIK-8REGwyVvHMm7XEb-bj4Y7_O5xdPLKpNnik2h7WnnH_YzQe3zH4NLQz3PfGcKvPlE-70XzdKMnl1pWN1jZ6x8ulb0IDr5mXoksrcrB6DrtvoGK3lWAFgaYo6lVxlmdNU_VGDYKNVmLU3Kpl5aq5a2gzrQF4BQp7hFzmD6TvlmT1FZFsnpICm2WJgBdt1osw3VOB7qzhIJKiYjteInxSMIA"/>
+<div class="flex flex-col flex-1 min-w-0">
+<span class="font-button-label text-button-label text-on-surface truncate">3S — Oil leakage near Machine 5</span>
+<span class="font-body-sm text-body-sm text-outline truncate mt-0.5">Warehouse • 26 Aug</span>
+</div>
+<div class="bg-error-container text-on-error-container px-2.5 py-1 rounded-full flex-shrink-0 border border-error/20">
+<span class="font-section-label text-[10px] leading-tight tracking-wider uppercase font-bold">OPEN</span>
+</div>
+</li>
+<!-- Issue Item 2 -->
+<li class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.05)] p-3 border border-surface-container-high flex items-center gap-4 min-h-touch-target-min">
+<img class="w-[48px] h-[48px] rounded-lg object-cover flex-shrink-0 bg-surface-container" data-alt="A high-contrast, clear image of an industrial warehouse storage rack painted safety yellow, where several cardboard boxes are visibly crushed and disorganized. The lighting is bright, even, overhead fluorescent, typical of a modern pristine logistics center. The visual style is highly utilitarian and objective, focusing strictly on the logistical error without artistic distraction." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOSL17fsYnLbr4gUWk_M6zVIrSzGni34Zafo5xlA67-Cj0rW3sRiwRjbucn2F98WsnTU3c8NfNEah8Y_gqEPW3e1A3Xpsh1HIFLPIS69Y9wDWMoz5yhYiDCFhprd24Iou1FiEgobllulnNI7LDAVFxkMoIgUw9-8-wWzX-aWuR5if_GIWSmYJmpLIq82TJT48h7JD8VYLfuE-pCXhX0s1V7lt-8dWSvSFnoi2tZlgw-4Ia6UFu4gv2Vg"/>
+<div class="flex flex-col flex-1 min-w-0">
+<span class="font-button-label text-button-label text-on-surface truncate">1S — Damaged inventory boxes</span>
+<span class="font-body-sm text-body-sm text-outline truncate mt-0.5">Warehouse • 26 Aug</span>
+</div>
+<div class="bg-error-container text-on-error-container px-2.5 py-1 rounded-full flex-shrink-0 border border-error/20">
+<span class="font-section-label text-[10px] leading-tight tracking-wider uppercase font-bold">OPEN</span>
+</div>
+</li>
+<!-- Issue Item 3 -->
+<li class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.05)] p-3 border border-surface-container-high flex items-center gap-4 min-h-touch-target-min">
+<img class="w-[48px] h-[48px] rounded-lg object-cover flex-shrink-0 bg-surface-container" data-alt="A precise, objective photo of a pristine white factory wall next to a stainless steel conveyor belt, showing an accumulation of dark grey dust and grime in a corner. The scene is illuminated by harsh, clear overhead lighting, emphasizing a clean corporate/modern light-mode aesthetic where the dirt stands out starkly as a compliance failure. High legibility of the texture is prioritized." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNlqhaNjM8-wlhL1CBWf3M9-LrzShQ2Vh0NRPdGwwps-jHbhDfiHtZNYn2iXVeUzHVUqIdzR3fnCy7AswpsNIDPSuQNV_jqgqEQUfHH67PTulOp_Hg6NMGx-9juhBjT4xi0noDiOMUUE84pBa-MyOqbNUg6Llere3ejz7_pSm-o9ezewjsNjH2lJppOptaE_UhCa6ExqdzFmXeakDWQSeRMcGOL7v3C0S1N-a1-XpkzFErwUDxjyilKw"/>
+<div class="flex flex-col flex-1 min-w-0">
+<span class="font-button-label text-button-label text-on-surface truncate">2S — Dust accumulation on wall</span>
+<span class="font-body-sm text-body-sm text-outline truncate mt-0.5">Warehouse • 26 Aug</span>
+</div>
+<div class="bg-error-container text-on-error-container px-2.5 py-1 rounded-full flex-shrink-0 border border-error/20">
+<span class="font-section-label text-[10px] leading-tight tracking-wider uppercase font-bold">OPEN</span>
+</div>
+</li>
+</ul>
+</section>
+</main>
+<!-- Fixed Bottom Action Area (Task-Focused Screen -> Suppress Main Nav, show contextual action) -->
+<div class="fixed bottom-0 left-0 w-full bg-surface-container-lowest pt-4 px-page-margin pb-safe shadow-[0px_-8px_16px_rgba(0,0,0,0.03)] z-40 border-t border-surface-container">
+<div class="max-w-2xl mx-auto flex flex-col gap-3">
+<p class="font-body-sm text-body-sm text-outline text-center">Once submitted, issues are sent to the area incharge.</p>
+<button class="w-full h-touch-target-min bg-primary-container text-on-primary rounded-xl font-button-label text-button-label flex items-center justify-center active:scale-[0.98] transition-transform shadow-sm">
+                Submit Audit
+            </button>
+</div>
+</div>
+</body></html>

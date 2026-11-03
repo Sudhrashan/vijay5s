@@ -1,0 +1,26 @@
+# Local production-like stack (mirrors the Railway pilot: db + api + web, no Redis).
+# Run: docker compose up --build   then open http://localhost:8080
+services:
+  db:
+    image: postgres:16-alpine
+    environment: { POSTGRES_USER: vijay, POSTGRES_PASSWORD: vijay, POSTGRES_DB: vijay5s }
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U vijay"], interval: 5s, retries: 10 }
+  api:
+    build: ./backend
+    environment:
+      HOST: 0.0.0.0
+      PORT: "8000"
+      DATABASE_URL: postgresql+psycopg://vijay:vijay@db:5432/vijay5s
+      JWT_SECRET: ${JWT_SECRET:-change-me}
+      CORS_ORIGINS: http://localhost:8080
+    depends_on: { db: { condition: service_healthy } }
+    volumes: [uploads:/data/uploads]
+  web:
+    build: ./frontend
+    environment:
+      PORT: "80"
+      API_UPSTREAM: api:8000
+    ports: ["8080:80"]
+    depends_on: [api]
+volumes: { pgdata: {}, uploads: {} }

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>VIJAY - Audit Capture</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#004881",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed-dim": "#a2c9ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-container": "#c7d7f2",
+                        "surface-tint": "#0e60a6",
+                        "surface-container-highest": "#e0e3e6",
+                        "on-secondary-fixed-variant": "#1d4972",
+                        "on-primary-container": "#bfd9ff",
+                        "primary-fixed": "#d3e4ff",
+                        "secondary-fixed-dim": "#a2cafa",
+                        "on-primary-fixed": "#001c38",
+                        "tertiary-fixed": "#d3e4fe",
+                        "primary": "#00477f",
+                        "tertiary-container": "#4e5e74",
+                        "on-surface": "#181c1e",
+                        "primary-container": "#0b5fa5",
+                        "secondary": "#38618b",
+                        "on-secondary-container": "#2f5982",
+                        "on-error": "#ffffff",
+                        "on-background": "#181c1e",
+                        "outline": "#727782",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "surface": "#f7fafd",
+                        "surface-container-high": "#e5e8eb",
+                        "secondary-container": "#a8cfff",
+                        "inverse-surface": "#2d3133",
+                        "inverse-on-surface": "#eef1f4",
+                        "background": "#f7fafd",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "surface-dim": "#d7dadd",
+                        "secondary-fixed": "#d1e4ff",
+                        "surface-variant": "#e0e3e6",
+                        "on-surface-variant": "#414751",
+                        "on-secondary-fixed": "#001d35",
+                        "error": "#ba1a1a",
+                        "surface-bright": "#f7fafd",
+                        "tertiary": "#37465c",
+                        "surface-container": "#ebeef1",
+                        "outline-variant": "#c1c7d2",
+                        "surface-container-low": "#f1f4f7",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#a2c9ff",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "success": "#16a34a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap": "12px",
+                        "section-gap": "24px",
+                        "card-padding": "16px",
+                        "touch-target-min": "56px",
+                        "page-margin": "16px"
+                    },
+                    "fontFamily": {
+                        "screen-title": ["Inter"],
+                        "button-label": ["Inter"],
+                        "body-md": ["Inter"],
+                        "data-display": ["Inter"],
+                        "section-label": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "screen-title": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "button-label": ["16px", { "lineHeight": "20px", "fontWeight": "600" }],
+                        "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "400" }],
+                        "data-display": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "section-label": ["13px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface h-full flex flex-col overflow-hidden select-none touch-manipulation">
+<!-- Top App Bar -->
+<header class="fixed top-0 left-0 w-full z-50 flex items-center px-4 h-[56px] bg-[#073B63] flat no shadows">
+<button aria-label="Go back" class="text-on-primary hover:bg-primary-container/20 active:opacity-80 transition-opacity p-2 -ml-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="flex-1 font-screen-title text-screen-title text-on-primary ml-2 truncate">Warehouse</h1>
+<div class="font-section-label text-section-label text-on-primary/70">Issue #3</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto mt-[56px] pb-[160px] relative">
+<!-- Progress Bar -->
+<div class="bg-surface-container-low px-page-margin py-3 border-b border-surface-container-highest">
+<div class="flex justify-between items-center mb-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">8 / 20 checkpoints</span>
+<span class="font-section-label text-section-label text-primary-container">40%</span>
+</div>
+<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 40%;"></div>
+</div>
+</div>
+<div class="p-page-margin flex flex-col gap-section-gap">
+<!-- Photo Capture Area -->
+<section>
+<div class="w-full h-64 border-2 border-dashed border-outline-variant rounded-xl bg-surface-container-lowest flex flex-col items-center justify-center gap-2 active:bg-surface-container-low transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-primary-container text-4xl" data-icon="photo_camera" style="font-variation-settings: 'FILL' 1;">photo_camera</span>
+<span class="font-button-label text-button-label text-on-surface">Tap to capture photo</span>
+</div>
+</section>
+<!-- 5S Category Row -->
+<section class="flex flex-col gap-stack-gap">
+<h2 class="font-section-label text-section-label text-on-surface-variant uppercase tracking-wider">5S CATEGORY</h2>
+<div class="flex overflow-x-auto gap-3 hide-scrollbar pb-2 -mx-page-margin px-page-margin">
+<!-- Chip 1 -->
+<button class="shrink-0 h-[56px] px-6 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface font-button-label text-button-label flex items-center gap-2 active:bg-surface-container-low transition-colors">
+                        1S Sort
+                    </button>
+<!-- Chip 2 -->
+<button class="shrink-0 h-[56px] px-6 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface font-button-label text-button-label flex items-center gap-2 active:bg-surface-container-low transition-colors">
+                        2S Set in Order
+                    </button>
+<!-- Chip 3 (Selected) -->
+<button class="shrink-0 h-[56px] px-6 rounded-full border-none bg-primary-container text-on-primary font-button-label text-button-label flex items-center gap-2 shadow-[0px_4px_12px_rgba(0,0,0,0.05)]">
+<span class="material-symbols-outlined" data-icon="check" data-weight="fill">check</span>
+                        3S Shine
+                    </button>
+<!-- Chip 4 -->
+<button class="shrink-0 h-[56px] px-6 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface font-button-label text-button-label flex items-center gap-2 active:bg-surface-container-low transition-colors">
+                        4S Standardize
+                    </button>
+<!-- Chip 5 -->
+<button class="shrink-0 h-[56px] px-6 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface font-button-label text-button-label flex items-center gap-2 active:bg-surface-container-low transition-colors">
+                        5S Sustain
+                    </button>
+</div>
+</section>
+<!-- Comments Field -->
+<section class="flex flex-col gap-stack-gap">
+<h2 class="font-section-label text-section-label text-on-surface-variant uppercase tracking-wider">COMMENTS</h2>
+<div class="relative bg-surface-container-lowest rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.05)] overflow-hidden">
+<textarea class="w-full border-none bg-transparent p-4 min-h-[100px] font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary-container focus:outline-none resize-none" placeholder="Describe the issue..."></textarea>
+<button aria-label="Voice input" class="absolute bottom-3 right-3 p-2 text-on-surface-variant hover:text-primary-container active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="mic" data-weight="fill">mic</span>
+</button>
+</div>
+</section>
+</div>
+</main>
+<!-- Fixed Action Bottom Row -->
+<footer class="fixed bottom-0 left-0 w-full z-50 bg-surface border-t border-surface-container-highest p-page-margin flex flex-col gap-stack-gap pb-safe">
+<button class="w-full h-touch-target-min bg-success text-on-primary font-button-label text-button-label rounded-xl flex items-center justify-center active:opacity-90 transition-opacity">
+            Save Issue
+        </button>
+<div class="flex gap-stack-gap">
+<button class="flex-1 h-touch-target-min bg-transparent border border-primary-container text-primary-container font-button-label text-button-label rounded-xl flex items-center justify-center active:bg-primary-container/10 transition-colors">
+                Previous
+            </button>
+<button class="flex-1 h-touch-target-min bg-transparent border border-primary-container text-primary-container font-button-label text-button-label rounded-xl flex items-center justify-center active:bg-primary-container/10 transition-colors">
+                Next
+            </button>
+</div>
+</footer>
+</body></html>

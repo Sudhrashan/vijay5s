@@ -1,0 +1,8 @@
+.env
+.env.*
+!.env.example
+uploads
+tests
+.pytest_cache
+**/__pycache__
+*.db

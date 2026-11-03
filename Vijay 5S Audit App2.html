@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Auditor Home</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#004881",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed-dim": "#a2c9ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-container": "#c7d7f2",
+                        "surface-tint": "#0e60a6",
+                        "surface-container-highest": "#e0e3e6",
+                        "on-secondary-fixed-variant": "#1d4972",
+                        "on-primary-container": "#bfd9ff",
+                        "primary-fixed": "#d3e4ff",
+                        "secondary-fixed-dim": "#a2cafa",
+                        "on-primary-fixed": "#001c38",
+                        "tertiary-fixed": "#d3e4fe",
+                        "primary": "#00477f",
+                        "tertiary-container": "#4e5e74",
+                        "on-surface": "#181c1e",
+                        "primary-container": "#0b5fa5",
+                        "secondary": "#38618b",
+                        "on-secondary-container": "#2f5982",
+                        "on-error": "#ffffff",
+                        "on-background": "#181c1e",
+                        "outline": "#727782",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "surface": "#f7fafd",
+                        "surface-container-high": "#e5e8eb",
+                        "secondary-container": "#a8cfff",
+                        "inverse-surface": "#2d3133",
+                        "inverse-on-surface": "#eef1f4",
+                        "background": "#f7fafd",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "surface-dim": "#d7dadd",
+                        "secondary-fixed": "#d1e4ff",
+                        "surface-variant": "#e0e3e6",
+                        "on-surface-variant": "#414751",
+                        "on-secondary-fixed": "#001d35",
+                        "error": "#ba1a1a",
+                        "surface-bright": "#f7fafd",
+                        "tertiary": "#37465c",
+                        "surface-container": "#ebeef1",
+                        "outline-variant": "#c1c7d2",
+                        "surface-container-low": "#f1f4f7",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#a2c9ff",
+                        "on-tertiary-fixed": "#0b1c30"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap": "12px",
+                        "section-gap": "24px",
+                        "card-padding": "16px",
+                        "touch-target-min": "56px",
+                        "page-margin": "16px"
+                    },
+                    "fontFamily": {
+                        "screen-title": ["Inter"],
+                        "button-label": ["Inter"],
+                        "body-md": ["Inter"],
+                        "data-display": ["Inter"],
+                        "section-label": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "screen-title": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "button-label": ["16px", { "lineHeight": "20px", "fontWeight": "600" }],
+                        "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "400" }],
+                        "data-display": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "section-label": ["13px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased pb-safe min-h-screen pt-[56px] pb-[80px]">
+<!-- Top App Bar -->
+<header class="bg-[#073B63] fixed top-0 left-0 w-full z-50 flex items-center px-4 w-full h-[56px] flex items-center justify-between">
+<div class="flex items-center gap-4">
+<img alt="VIJAY Logo" class="h-6 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6RNQBck6i7D7RSkj_nRnvTkX8NJrWplYJ_tLaDvk_zog7VD-Q2b9lXJJtFy7qIhQ_3hvCNmkiKPZd3fzLz3b--2c1WqgCn5cy6nCCAjf7uXVVxlDgEVa9Idfnl_Rl8gErpw5MwW3uD2kFF8xXos7QfywUsngTnzuBH4EvbZjG7yMPBdOdO769BKFVO1wbARMWtliIUl9x5OLDr0ScKNhNWLEjpswk_pVZAsOPtoI-UXiL8AoobpI32Q"/>
+<h1 class="font-screen-title text-screen-title text-on-primary">5S Audit</h1>
+</div>
+<button aria-label="Notifications" class="text-on-primary relative p-2">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span>
+</button>
+</header>
+<main class="p-page-margin flex flex-col gap-section-gap max-w-3xl mx-auto">
+<!-- Welcome Card -->
+<section class="bg-surface-container-lowest p-card-padding rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.05)]">
+<h2 class="text-[20px] font-bold leading-tight text-on-surface mb-2">Welcome, Vijay</h2>
+<div class="flex items-center text-on-surface-variant gap-2 font-body-sm">
+<span class="material-symbols-outlined text-lg">calendar_month</span>
+<span>August 2026 Audit Cycle</span>
+</div>
+</section>
+<!-- Stats Grid -->
+<section class="grid grid-cols-3 gap-3">
+<div class="bg-surface-container-lowest p-3 rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.05)] flex flex-col items-center justify-center text-center">
+<span class="font-data-display text-data-display text-[#F59E0B]">15</span>
+<span class="font-section-label text-[12px] uppercase text-on-surface-variant mt-1">Pending</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.05)] flex flex-col items-center justify-center text-center">
+<span class="font-data-display text-data-display text-[#16A34A]">8</span>
+<span class="font-section-label text-[12px] uppercase text-on-surface-variant mt-1">Completed</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.05)] flex flex-col items-center justify-center text-center">
+<span class="font-data-display text-data-display text-primary-container">4</span>
+<span class="font-section-label text-[12px] uppercase text-on-surface-variant mt-1">Zones</span>
+</div>
+</section>
+<!-- Assigned Zones List -->
+<section class="flex flex-col gap-stack-gap">
+<h3 class="font-section-label text-section-label uppercase text-on-surface-variant">ASSIGNED ZONES</h3>
+<div class="flex flex-col gap-2">
+<!-- Zone 1 -->
+<button class="bg-surface-container-lowest p-card-padding rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.05)] flex items-center justify-between min-h-touch-target-min text-left w-full hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary-container text-2xl">precision_manufacturing</span>
+<div>
+<h4 class="font-button-label text-button-label text-on-surface">Production</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">20 checkpoints • Last audited 12 Aug</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="bg-[#FEF3C7] text-[#D97706] text-[11px] font-bold px-2 py-1 rounded-full uppercase tracking-wide">Pending</span>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</div>
+</button>
+<!-- Zone 2 -->
+<button class="bg-surface-container-lowest p-card-padding rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.05)] flex items-center justify-between min-h-touch-target-min text-left w-full hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary-container text-2xl">inventory_2</span>
+<div>
+<h4 class="font-button-label text-button-label text-on-surface">Packing</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">20 checkpoints • Last audited 12 Aug</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="bg-[#DCFCE7] text-[#15803D] text-[11px] font-bold px-2 py-1 rounded-full uppercase tracking-wide">Done</span>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</div>
+</button>
+<!-- Zone 3 -->
+<button class="bg-surface-container-lowest p-card-padding rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.05)] flex items-center justify-between min-h-touch-target-min text-left w-full hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary-container text-2xl">warehouse</span>
+<div>
+<h4 class="font-button-label text-button-label text-on-surface">Warehouse</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">20 checkpoints • Last audited 12 Aug</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="bg-[#FEF3C7] text-[#D97706] text-[11px] font-bold px-2 py-1 rounded-full uppercase tracking-wide">Pending</span>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</div>
+</button>
+<!-- Zone 4 -->
+<button class="bg-surface-container-lowest p-card-padding rounded-xl shadow-[0px_4px_12px_rgba(0,0,0,0.05)] flex items-center justify-between min-h-touch-target-min text-left w-full hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary-container text-2xl">local_shipping</span>
+<div>
+<h4 class="font-button-label text-button-label text-on-surface">Dispatch</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">20 checkpoints • Last audited 12 Aug</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</div>
+</button>
+</div>
+</section>
+<!-- CTA Action -->
+<div class="mt-4">
+<button class="w-full bg-[#0B5FA5] text-on-primary font-button-label text-button-label h-[56px] rounded-xl flex items-center justify-center hover:bg-primary transition-colors active:scale-95 duration-100">
+                Start Audit
+            </button>
+</div>
+</main>
+<!-- Bottom Nav Bar -->
+<nav class="md:hidden bg-surface dark:bg-inverse-surface border-t border-outline-variant dark:border-outline shadow-[0px_-4px_12px_rgba(0,0,0,0.05)] fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe docked full-width bottom-0 h-[80px]">
+<button aria-current="page" class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-xl min-h-[56px] px-6 active:scale-95 transition-transform duration-100 hover:bg-surface-container-high dark:hover:bg-surface-variant">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-section-label text-[11px] mt-1">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant min-h-[56px] px-6 active:scale-95 transition-transform duration-100 hover:bg-surface-container-high dark:hover:bg-surface-variant">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-section-label text-[11px] mt-1">My Audits</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant min-h-[56px] px-6 active:scale-95 transition-transform duration-100 hover:bg-surface-container-high dark:hover:bg-surface-variant">
+<span class="material-symbols-outlined">person</span>
+<span class="font-section-label text-[11px] mt-1">Profile</span>
+</button>
+</nav>
+</body></html>

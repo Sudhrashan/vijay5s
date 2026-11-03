@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vijay 5S Audit - Monthly Reports</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#eef1f4",
+                        "surface": "#f7fafd",
+                        "on-secondary-fixed": "#001d35",
+                        "on-surface": "#181c1e",
+                        "on-tertiary-container": "#72ef8c",
+                        "on-primary-fixed-variant": "#004881",
+                        "secondary-container": "#a8cfff",
+                        "on-surface-variant": "#414751",
+                        "on-tertiary-fixed": "#002109",
+                        "inverse-primary": "#a2c9ff",
+                        "tertiary-container": "#006c2d",
+                        "outline-variant": "#c1c7d2",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "secondary-fixed-dim": "#a2cafa",
+                        "tertiary-fixed": "#7ffc97",
+                        "outline": "#727782",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#2f5982",
+                        "surface-dim": "#d7dadd",
+                        "tertiary-fixed-dim": "#62df7d",
+                        "on-secondary": "#ffffff",
+                        "primary": "#00477f",
+                        "tertiary": "#005120",
+                        "secondary": "#38618b",
+                        "on-tertiary-fixed-variant": "#005320",
+                        "secondary-fixed": "#d1e4ff",
+                        "on-primary-fixed": "#001c38",
+                        "surface-variant": "#e0e3e6",
+                        "primary-fixed-dim": "#a2c9ff",
+                        "surface-container": "#ebeef1",
+                        "background": "#f7fafd",
+                        "surface-container-low": "#f1f4f7",
+                        "surface-container-high": "#e5e8eb",
+                        "inverse-surface": "#2d3133",
+                        "surface-bright": "#f7fafd",
+                        "surface-tint": "#0e60a6",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-container": "#0b5fa5",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "surface-container-highest": "#e0e3e6",
+                        "on-background": "#181c1e",
+                        "on-secondary-fixed-variant": "#1d4972",
+                        "on-primary-container": "#bfd9ff",
+                        "primary-fixed": "#d3e4ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-margin": "24px",
+                        "container-padding": "16px",
+                        "gutter": "16px",
+                        "stack-gap": "12px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "section-label": ["Inter"],
+                        "body-main": ["Inter"],
+                        "data-number": ["Inter"],
+                        "screen-title": ["Inter"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "section-label": ["13px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "body-main": ["15px", { "lineHeight": "22px", "fontWeight": "400" }],
+                        "data-number": ["28px", { "lineHeight": "34px", "fontWeight": "700" }],
+                        "screen-title": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-[#F4F7FA] font-body-main text-on-surface antialiased min-h-screen flex flex-col pt-14 pb-20">
+<!-- TopAppBar -->
+<header class="bg-[#073B63] fixed top-0 w-full z-50 shadow-md">
+<div class="flex items-center justify-between px-container-padding h-14 w-full">
+<button class="text-white hover:bg-white/10 p-2 rounded-full transition-colors active:scale-95 flex items-center justify-center">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-screen-title text-screen-title text-white flex-1 text-center truncate px-4">August 2026 Report</h1>
+<button class="text-white hover:bg-white/10 p-2 rounded-full transition-colors active:scale-95 flex items-center justify-center">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+</header>
+<main class="flex-1 px-container-padding py-section-margin max-w-3xl mx-auto w-full space-y-section-margin">
+<!-- Top Summary Section -->
+<section>
+<div class="bg-surface-container-lowest rounded-[16px] shadow-[0px_4px_12px_rgba(15,23,42,0.08)] p-container-padding">
+<div class="flex flex-col items-center border-b border-surface-variant pb-stack-gap mb-stack-gap">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Overall Closure Rate</span>
+<span class="font-data-number text-data-number text-tertiary-container text-4xl">92%</span>
+</div>
+<div class="grid grid-cols-2 gap-4 text-center">
+<div class="flex flex-col">
+<span class="font-data-number text-data-number text-primary">148</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Issues Raised</span>
+</div>
+<div class="flex flex-col">
+<span class="font-data-number text-data-number text-tertiary-container">136</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Issues Closed</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Performance by Category -->
+<section>
+<h2 class="font-section-label text-section-label text-on-surface-variant mb-stack-gap">ISSUES BY CATEGORY</h2>
+<div class="bg-surface-container-lowest rounded-[16px] shadow-[0px_4px_12px_rgba(15,23,42,0.08)] p-container-padding space-y-4">
+<!-- 1S Sort -->
+<div class="space-y-1">
+<div class="flex justify-between text-sm font-medium">
+<span>1S Sort</span>
+<span>42</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-3">
+<div class="bg-error h-3 rounded-full" style="width: 75%"></div>
+</div>
+</div>
+<!-- 2S Set in Order -->
+<div class="space-y-1">
+<div class="flex justify-between text-sm font-medium">
+<span>2S Set in Order</span>
+<span>28</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-3">
+<div class="bg-[#F59E0B] h-3 rounded-full" style="width: 50%"></div>
+</div>
+</div>
+<!-- 3S Shine -->
+<div class="space-y-1">
+<div class="flex justify-between text-sm font-medium">
+<span>3S Shine</span>
+<span>56</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-3">
+<div class="bg-primary h-3 rounded-full" style="width: 100%"></div>
+</div>
+</div>
+<!-- 4S Standardize -->
+<div class="space-y-1">
+<div class="flex justify-between text-sm font-medium">
+<span>4S Standardize</span>
+<span>12</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-3">
+<div class="bg-primary h-3 rounded-full" style="width: 21%"></div>
+</div>
+</div>
+<!-- 5S Sustain -->
+<div class="space-y-1">
+<div class="flex justify-between text-sm font-medium">
+<span>5S Sustain</span>
+<span>10</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-3">
+<div class="bg-primary h-3 rounded-full" style="width: 18%"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trend Section -->
+<section>
+<h2 class="font-section-label text-section-label text-on-surface-variant mb-stack-gap">CLOSURE TREND</h2>
+<div class="bg-surface-container-lowest rounded-[16px] shadow-[0px_4px_12px_rgba(15,23,42,0.08)] p-container-padding flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<div class="bg-tertiary-container/10 p-2 rounded-full">
+<span class="material-symbols-outlined text-tertiary-container">trending_up</span>
+</div>
+<div>
+<p class="font-medium text-on-surface">Upward Trend</p>
+<p class="text-sm text-on-surface-variant">Compared to July</p>
+</div>
+</div>
+<div class="bg-tertiary-container/10 px-3 py-1 rounded-full">
+<span class="text-tertiary-container font-bold">+5%</span>
+</div>
+</div>
+</section>
+<!-- Top Zones -->
+<section>
+<h2 class="font-section-label text-section-label text-on-surface-variant mb-stack-gap">TOP ZONES</h2>
+<div class="bg-surface-container-lowest rounded-[16px] shadow-[0px_4px_12px_rgba(15,23,42,0.08)] overflow-hidden">
+<ul class="divide-y divide-surface-variant">
+<li class="flex justify-between items-center p-4 hover:bg-surface-container-low transition-colors">
+<span class="font-medium text-on-surface">Warehouse</span>
+<span class="text-tertiary-container font-bold">98%</span>
+</li>
+<li class="flex justify-between items-center p-4 hover:bg-surface-container-low transition-colors">
+<span class="font-medium text-on-surface">Processing Area</span>
+<span class="text-tertiary-container font-bold">85%</span>
+</li>
+<li class="flex justify-between items-center p-4 hover:bg-surface-container-low transition-colors">
+<span class="font-medium text-on-surface">Loading Dock</span>
+<span class="text-tertiary-container font-bold">94%</span>
+</li>
+</ul>
+</div>
+</section>
+<!-- Action Button -->
+<section class="mt-8">
+<button class="w-full h-[56px] bg-tertiary-container text-white rounded-lg font-bold text-lg hover:bg-tertiary-container/90 active:scale-[0.98] transition-all shadow-md flex items-center justify-center space-x-2">
+<span class="material-symbols-outlined">download</span>
+<span>Download PDF Report</span>
+</button>
+</section>
+<!-- Brand Mark -->
+<div class="flex justify-center mt-8 opacity-50">
+<img alt="Vijay Logo" class="h-12 w-auto grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdodRq9wR0uzCYXZYiEQcEsFr7XlhTjK0evMUK8hQX-4zf7K4dAFbBWCRk_QuW8dxP4r4-BNqOIxZmss9woR50MDA7at-oA7ofMmUqf09YYSn53L0ATl4a1bNE8croPEDzQaS20Fxw9GjoFYPLfW-VZqF5TMCtYHbCfXWLiXf_APyUyRW9qIBlKf5Q2ZtzeMMUQrcf0VCFydKvIFiZvzhNjborFDA4XOl6LZJeVYheyYU4cC_uYRdY1W3l1aDi3_xYaw"/>
+</div>
+</main>
+</body></html>

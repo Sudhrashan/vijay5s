@@ -1,0 +1,1192 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style></head><body>
+<title>Vijay 5S Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+
+<style>
+:root{
+  --blue:#0B5FA5; --blue-hi:#0E74C8; --navy:#073B63;
+  --green:#16A34A; --red:#DC2626; --amber:#F59E0B;
+  --bg:#F4F7FA; --card:#FFFFFF; --ink:#0F172A; --muted:#64748B; --line:#E2E8F0;
+  --sub:#F8FAFC;
+  --t-blue:#E7F0F9; --t-green:#E6F6EC; --t-red:#FCEBEB; --t-amber:#FDF2E0; --t-grey:#EEF2F6;
+  --side:#073B63; --side-2:#0A4E82; --side-ink:#FFFFFF; --side-mut:#9CC0DE; --side-line:#0C4E80;
+  --shadow:0 1px 2px rgba(15,23,42,.05), 0 6px 16px rgba(15,23,42,.05);
+  --grid:#EDF1F5;
+  --r:12px;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --blue:#4B9FE1; --blue-hi:#6FB6EC; --navy:#0A1E2E;
+    --green:#3FCB83; --red:#F0736F; --amber:#FBBF24;
+    --bg:#0B1520; --card:#111F2D; --ink:#E8F0F7; --muted:#94AABD; --line:#1E3346;
+    --sub:#0E1A26;
+    --t-blue:#123049; --t-green:#0F3324; --t-red:#3A1B1D; --t-amber:#3A2A11; --t-grey:#182636;
+    --side:#071523; --side-2:#12324D; --side-ink:#EAF2F9; --side-mut:#7E9AB4; --side-line:#12293F;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 6px 18px rgba(0,0,0,.35);
+    --grid:#1B2C3D;
+  }
+}
+:root[data-theme="dark"]{
+  --blue:#4B9FE1; --blue-hi:#6FB6EC; --navy:#0A1E2E;
+  --green:#3FCB83; --red:#F0736F; --amber:#FBBF24;
+  --bg:#0B1520; --card:#111F2D; --ink:#E8F0F7; --muted:#94AABD; --line:#1E3346;
+  --sub:#0E1A26;
+  --t-blue:#123049; --t-green:#0F3324; --t-red:#3A1B1D; --t-amber:#3A2A11; --t-grey:#182636;
+  --side:#071523; --side-2:#12324D; --side-ink:#EAF2F9; --side-mut:#7E9AB4; --side-line:#12293F;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 6px 18px rgba(0,0,0,.35);
+  --grid:#1B2C3D;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;
+  font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased;
+}
+:focus-visible{outline:2px solid var(--blue); outline-offset:2px; border-radius:6px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- shell ---------- */
+.app{display:grid; grid-template-columns:240px 1fr; min-height:100vh}
+.side{background:var(--side); color:var(--side-ink); display:flex; flex-direction:column; position:sticky; top:0; height:100vh}
+.brand{padding:20px 20px 18px; border-bottom:1px solid var(--side-line)}
+.brand .wm{font-size:20px; font-weight:700; letter-spacing:.14em}
+.brand .sm{font-size:10px; font-weight:600; letter-spacing:.22em; color:var(--side-mut); margin-top:3px}
+.nav{padding:12px 10px; display:flex; flex-direction:column; gap:2px; flex:1; overflow:auto}
+.nav button{
+  display:flex; align-items:center; gap:11px; width:100%; text-align:left;
+  background:none; border:0; color:var(--side-ink); opacity:.82;
+  font:inherit; font-weight:500; padding:10px 12px; border-radius:8px; cursor:pointer;
+  border-left:3px solid transparent; transition:background .12s, opacity .12s;
+}
+.nav button:hover{background:rgba(255,255,255,.07); opacity:1}
+.nav button.on{background:var(--side-2); opacity:1; font-weight:600; border-left-color:var(--blue-hi)}
+.nav svg{width:17px; height:17px; flex:none; fill:currentColor}
+.nav .badge{margin-left:auto; background:var(--red); color:#fff; font-size:10px; font-weight:700; padding:1px 6px; border-radius:20px}
+.side-foot{padding:14px 16px; border-top:1px solid var(--side-line); display:flex; align-items:center; gap:10px}
+.side-foot .who{font-size:13px; font-weight:600}
+.side-foot .role{font-size:11px; color:var(--side-mut)}
+
+.av{width:32px; height:32px; border-radius:50%; background:var(--blue); color:#fff; display:grid; place-items:center; font-size:12px; font-weight:700; flex:none; letter-spacing:.02em}
+.av.sm{width:24px; height:24px; font-size:10px}
+
+.main{min-width:0; display:flex; flex-direction:column}
+.top{
+  height:64px; background:var(--card); border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:14px; padding:0 24px; position:sticky; top:0; z-index:20;
+}
+.top h1{font-size:19px; font-weight:600; margin:0; letter-spacing:-.01em}
+.top .spacer{flex:1}
+.search{position:relative}
+.search input{
+  width:230px; padding:8px 10px 8px 34px; border:1px solid var(--line); border-radius:8px;
+  background:var(--sub); color:var(--ink); font:inherit; font-size:13px;
+}
+.search svg{position:absolute; left:10px; top:9px; width:14px; height:14px; fill:var(--muted)}
+select,input[type=text],input[type=date]{
+  padding:8px 10px; border:1px solid var(--line); border-radius:8px;
+  background:var(--card); color:var(--ink); font:inherit; font-size:13px; cursor:pointer;
+}
+.iconbtn{position:relative; width:36px; height:36px; border-radius:8px; border:1px solid var(--line); background:var(--card); cursor:pointer; display:grid; place-items:center}
+.iconbtn svg{width:16px; height:16px; fill:var(--muted)}
+.dot{position:absolute; top:6px; right:7px; width:7px; height:7px; border-radius:50%; background:var(--red); border:2px solid var(--card)}
+
+.content{padding:22px 24px 44px; display:flex; flex-direction:column; gap:18px}
+.pagehead{display:flex; align-items:flex-end; gap:16px; flex-wrap:wrap}
+.pagehead .sub{font-size:13px; color:var(--muted); margin-top:2px}
+.pagehead h2{margin:0; font-size:26px; font-weight:600; letter-spacing:-.02em}
+.pagehead .acts{margin-left:auto; display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+
+.btn{padding:9px 15px; border-radius:8px; border:1px solid var(--blue); background:var(--blue); color:#fff; font:inherit; font-weight:600; font-size:13px; cursor:pointer}
+.btn:hover{background:var(--blue-hi); border-color:var(--blue-hi)}
+.btn.ghost{background:var(--card); color:var(--ink); border-color:var(--line)}
+.btn.ghost:hover{background:var(--sub)}
+.btn.sm{padding:6px 11px; font-size:12px}
+
+.card{background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow); padding:18px 20px}
+.card > h3{margin:0 0 2px; font-size:16px; font-weight:600; letter-spacing:-.01em}
+.card > .note{font-size:12px; color:var(--muted); margin-bottom:14px}
+.lab{font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+
+.grid{display:grid; gap:16px}
+.kpis{grid-template-columns:repeat(5,1fr)}
+.c60-40{grid-template-columns:1.5fr 1fr; align-items:start}
+.c50{grid-template-columns:1fr 1fr; align-items:start}
+.c-alloc{grid-template-columns:1fr 280px}
+@media(max-width:1240px){.kpis{grid-template-columns:repeat(3,1fr)} .c60-40,.c50,.c-alloc{grid-template-columns:1fr}}
+@media(max-width:820px){.app{grid-template-columns:1fr} .side{position:static; height:auto} .nav{flex-direction:row; overflow-x:auto} .nav button{border-left:0; border-bottom:3px solid transparent; white-space:nowrap} .nav button.on{border-left:0; border-bottom-color:var(--blue-hi)} .kpis{grid-template-columns:repeat(2,1fr)} .side-foot{display:none}}
+
+/* ---------- kpi ---------- */
+.kpi{background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow); padding:15px 16px 12px; display:flex; flex-direction:column; gap:6px; min-width:0}
+.kpi .ic{width:30px; height:30px; border-radius:8px; display:grid; place-items:center}
+.kpi .ic svg{width:15px; height:15px}
+.kpi .v{font-size:34px; font-weight:700; line-height:1.05; letter-spacing:-.03em; font-variant-numeric:tabular-nums}
+.kpi .tr{font-size:12px; color:var(--muted); display:flex; align-items:center; gap:5px}
+.up{color:var(--green)} .down{color:var(--red)}
+.spark{width:100%; height:26px; display:block}
+
+/* ---------- pills ---------- */
+.pill{display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; letter-spacing:.04em; padding:3px 9px; border-radius:20px; white-space:nowrap}
+.p-red{background:var(--t-red); color:var(--red)}
+.p-green{background:var(--t-green); color:var(--green)}
+.p-amber{background:var(--t-amber); color:#9A6200}
+.p-blue{background:var(--t-blue); color:var(--blue)}
+.p-navy{background:var(--t-grey); color:var(--muted)}
+:root[data-theme="dark"] .p-amber{color:var(--amber)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .p-amber{color:var(--amber)}}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto; margin:0 -20px; padding:0 20px}
+table{width:100%; border-collapse:collapse; font-size:14px}
+th{
+  text-align:left; font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--muted); padding:9px 12px; background:var(--sub); white-space:nowrap;
+  border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+}
+th.s{cursor:pointer; user-select:none}
+th.s:hover{color:var(--ink)}
+th:first-child{border-top-left-radius:8px; border-bottom-left-radius:8px}
+th:last-child{border-top-right-radius:8px; border-bottom-right-radius:8px}
+td{padding:11px 12px; border-bottom:1px solid var(--line); vertical-align:middle}
+tbody tr:hover{background:var(--sub)}
+tbody tr:last-child td{border-bottom:0}
+.num{font-variant-numeric:tabular-nums; text-align:right}
+.mono{font-family:var(--mono); font-size:12.5px; color:var(--muted)}
+.strong{font-weight:600}
+.rowsub{font-size:12px; color:var(--muted)}
+.tfoot{display:flex; align-items:center; justify-content:space-between; padding-top:14px; font-size:13px; color:var(--muted)}
+.icoact{background:none; border:0; cursor:pointer; padding:4px; border-radius:6px}
+.icoact svg{width:15px; height:15px; fill:var(--muted)}
+.icoact:hover svg{fill:var(--blue)}
+.icoact.del:hover svg{fill:var(--red)}
+
+/* ---------- bars ---------- */
+.barrow{display:grid; grid-template-columns:96px 1fr 42px; align-items:center; gap:12px; padding:7px 0}
+.barrow .nm{font-size:13px; font-weight:500}
+.track{height:9px; background:var(--t-grey); border-radius:5px; overflow:hidden}
+.fill{height:100%; border-radius:5px; background:var(--blue)}
+.barrow .n{text-align:right; font-weight:700; font-variant-numeric:tabular-nums; font-size:14px}
+
+.stack{display:flex; height:14px; border-radius:7px; overflow:hidden; gap:2px; background:transparent}
+.stack > span{display:block}
+.legrid{display:grid; grid-template-columns:1fr 1fr; gap:8px 18px; margin-top:16px}
+.leg{display:flex; align-items:center; gap:8px; font-size:13px}
+.leg i{width:9px; height:9px; border-radius:3px; flex:none}
+.leg b{margin-left:auto; font-variant-numeric:tabular-nums}
+
+/* ---------- charts ---------- */
+.chart{width:100%; height:auto; display:block; overflow:visible}
+.chart text{font-family:Inter,sans-serif; font-size:11px; fill:var(--muted)}
+.gl{stroke:var(--grid); stroke-width:1}
+.legend{display:flex; gap:16px; align-items:center; font-size:12px; color:var(--muted)}
+.legend i{width:9px; height:9px; border-radius:3px; display:inline-block; margin-right:6px}
+.cardhead{display:flex; align-items:flex-start; gap:12px; margin-bottom:12px}
+.cardhead .legend{margin-left:auto}
+
+#tip{
+  position:fixed; z-index:80; pointer-events:none; opacity:0; transition:opacity .1s;
+  background:var(--navy); color:#fff; padding:7px 10px; border-radius:8px; font-size:12px;
+  box-shadow:0 6px 20px rgba(0,0,0,.28); white-space:nowrap;
+}
+:root[data-theme="dark"] #tip{background:#17324B}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #tip{background:#17324B}}
+#tip b{font-weight:700}
+
+/* ---------- zone cards ---------- */
+.zgrid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px}
+@media(max-width:1240px){.zgrid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.zgrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.zgrid{grid-template-columns:1fr}}
+.zone{background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow); padding:16px; display:flex; flex-direction:column; gap:3px; position:relative}
+.zone .zn{font-size:16px; font-weight:600}
+.zone .zm{font-size:12.5px; color:var(--muted)}
+.zone .zstats{display:flex; gap:16px; margin-top:12px; padding-top:12px; border-top:1px solid var(--line)}
+.zone .zs{font-size:12px; color:var(--muted)}
+.zone .zs b{display:block; font-size:17px; font-variant-numeric:tabular-nums}
+.ring{position:absolute; top:14px; right:14px; width:46px; height:46px}
+.ring text{font-size:13px; font-weight:700; fill:var(--ink); font-family:Inter}
+.kebab{position:absolute; top:auto; bottom:14px; right:14px}
+
+/* ---------- allocation chips ---------- */
+.chip{display:inline-flex; align-items:center; gap:6px; background:var(--t-blue); color:var(--blue); border-radius:20px; padding:3px 4px 3px 3px; font-size:12.5px; font-weight:600; margin:2px 4px 2px 0}
+.chip .av{width:20px; height:20px; font-size:9px}
+.chip button{background:none; border:0; color:inherit; cursor:pointer; font-size:14px; line-height:1; padding:0 5px 0 1px; opacity:.65}
+.chip button:hover{opacity:1}
+.chip.add{background:none; border:1px dashed var(--line); color:var(--muted); padding:4px 11px; cursor:pointer; font-weight:500}
+.chip.add:hover{border-color:var(--blue); color:var(--blue)}
+.aud{display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:9px; border:1px solid var(--line); margin-bottom:8px; background:var(--card)}
+.aud .nm{font-size:13px; font-weight:600}
+.aud .mt{font-size:11.5px; color:var(--muted)}
+.aud .load{margin-left:auto; font-size:11px; font-weight:700; color:var(--muted); font-variant-numeric:tabular-nums}
+
+/* ---------- calendar ---------- */
+.cal{display:grid; grid-template-columns:repeat(7,1fr); gap:8px}
+.cal .dh{font-size:11px; font-weight:700; letter-spacing:.08em; color:var(--muted); text-align:center; padding-bottom:4px}
+.day{min-height:78px; border:1px solid var(--line); border-radius:9px; padding:7px 8px; background:var(--card); display:flex; flex-direction:column; gap:5px}
+.day.empty{border:0; background:none}
+.day .dn{font-size:12px; font-weight:600; color:var(--muted); font-variant-numeric:tabular-nums}
+.day.today{border-color:var(--blue); box-shadow:0 0 0 1px var(--blue)}
+.day.today .dn{color:var(--blue)}
+.ev{font-size:11px; font-weight:600; padding:3px 6px; border-radius:6px; line-height:1.3}
+.ev.done{background:var(--t-green); color:var(--green)}
+.ev.miss{background:var(--t-red); color:var(--red)}
+.ev.plan{background:var(--t-blue); color:var(--blue)}
+.ev.due{background:var(--t-amber); color:#9A6200}
+
+/* ---------- misc ---------- */
+.filters{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+.filters .fg{display:flex; flex-direction:column; gap:4px}
+.filters .fg span{font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+.repeat{display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--line)}
+.repeat:last-child{border-bottom:0}
+.repeat .txt{font-size:13px; font-weight:500}
+.repeat .mt{font-size:12px; color:var(--muted)}
+.repeat .ct{margin-left:auto}
+.lead{display:flex; align-items:center; gap:11px; padding:9px 0; border-bottom:1px solid var(--line)}
+.lead:last-child{border-bottom:0}
+.rank{width:20px; font-size:12px; font-weight:700; color:var(--muted); font-variant-numeric:tabular-nums}
+.lead .nm{font-size:13.5px; font-weight:600}
+.lead .mt{font-size:12px; color:var(--muted)}
+.lead .sc{margin-left:auto; text-align:right}
+.lead .sc b{font-size:15px; font-variant-numeric:tabular-nums}
+.lead .sc span{display:block; font-size:11px; color:var(--muted)}
+.tog{position:relative; width:38px; height:22px; border-radius:20px; background:var(--line); border:0; cursor:pointer; transition:background .15s; flex:none}
+.tog::after{content:''; position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%; background:#fff; transition:transform .15s}
+.tog.on{background:var(--green)}
+.tog.on::after{transform:translateX(16px)}
+.setrow{display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid var(--line)}
+.setrow:last-child{border-bottom:0}
+.setrow .t{font-size:13.5px; font-weight:600}
+.setrow .d{font-size:12.5px; color:var(--muted)}
+.setrow .r{margin-left:auto; display:flex; align-items:center; gap:10px}
+.esc{display:grid; grid-template-columns:80px 1fr; gap:10px 14px; align-items:center}
+.esc .dd{font-family:var(--mono); font-size:12px; font-weight:600; color:var(--red); background:var(--t-red); padding:4px 8px; border-radius:6px; text-align:center}
+
+#toast{
+  position:fixed; bottom:24px; left:50%; transform:translate(-50%,14px); z-index:90;
+  background:var(--navy); color:#fff; padding:11px 18px; border-radius:10px; font-size:13px; font-weight:500;
+  box-shadow:0 10px 30px rgba(0,0,0,.3); opacity:0; pointer-events:none; transition:opacity .18s, transform .18s;
+}
+#toast.show{opacity:1; transform:translate(-50%,0)}
+.menu{position:absolute; z-index:60; background:var(--card); border:1px solid var(--line); border-radius:10px; box-shadow:0 12px 30px rgba(15,23,42,.16); padding:6px; min-width:170px}
+.menu button{display:block; width:100%; text-align:left; background:none; border:0; font:inherit; font-size:13px; padding:8px 10px; border-radius:7px; cursor:pointer; color:var(--ink)}
+.menu button:hover{background:var(--sub)}
+.demo{font-size:12px; color:var(--muted); border-top:1px solid var(--line); padding-top:14px}
+</style>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <div class="wm">VIJAY</div>
+      <div class="sm">5S AUDIT</div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-foot">
+      <div class="av">AD</div>
+      <div>
+        <div class="who">Admin</div>
+        <div class="role">Super Admin</div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <h1 id="ptitle">5S Dashboard</h1>
+      <div class="spacer"></div>
+      <select id="month" aria-label="Audit month"></select>
+      <div class="search">
+        <svg viewBox="0 0 24 24"><path d="M10 2a8 8 0 105.3 14l4.9 4.9 1.4-1.4-4.9-4.9A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z"/></svg>
+        <input id="gsearch" type="text" placeholder="Search issues, zones, people">
+      </div>
+      <button class="iconbtn" id="bell" aria-label="Notifications"><svg viewBox="0 0 24 24"><path d="M12 22a2.5 2.5 0 002.5-2.5h-5A2.5 2.5 0 0012 22zm7-6v-5a7 7 0 10-14 0v5l-2 2v1h18v-1l-2-2z"/></svg><span class="dot"></span></button>
+      <div class="av">AD</div>
+    </header>
+    <div class="content" id="view"></div>
+  </div>
+</div>
+
+<div id="tip"></div>
+<div id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============ DATA ============ */
+const CATS = ['1S Sort','2S Set in Order','3S Shine','4S Standardize','5S Sustain'];
+const CATK = ['1S','2S','3S','4S','5S'];
+
+const ZONES = [
+  {n:'Production',  cp:24, ic:'Suresh',  open:25, closed:22, score:74},
+  {n:'Packing',     cp:20, ic:'Anil',    open:14, closed:17, score:79},
+  {n:'Warehouse',   cp:20, ic:'Suresh',  open:18, closed:19, score:76},
+  {n:'Dispatch',    cp:16, ic:'Ramesh',  open:9,  closed:12, score:83},
+  {n:'Utility',     cp:14, ic:'Prakash', open:6,  closed:9,  score:88},
+  {n:'Maintenance', cp:18, ic:'Ganesh',  open:5,  closed:8,  score:86},
+  {n:'Quality',     cp:22, ic:'Deepa',   open:2,  closed:7,  score:94},
+  {n:'Stores',      cp:20, ic:'Kumar',   open:3,  closed:10, score:92},
+  {n:'Lab',         cp:16, ic:'Deepa',   open:1,  closed:4,  score:96},
+  {n:'Office',      cp:12, ic:'Latha',   open:1,  closed:2,  score:91},
+  {n:'Security',    cp:10, ic:'Vikram',  open:0,  closed:2,  score:95}
+];
+
+const MONTHS = [
+  {k:'2026-03', l:'March 2026',   open:52, closed:58,  overdue:19, raised:74, avg:14.2, comp:64, cat:[24,17,15,9,9]},
+  {k:'2026-04', l:'April 2026',   open:58, closed:66,  overdue:17, raised:81, avg:12.8, comp:71, cat:[26,18,16,10,11]},
+  {k:'2026-05', l:'May 2026',     open:63, closed:79,  overdue:16, raised:86, avg:11.6, comp:77, cat:[27,19,16,11,13]},
+  {k:'2026-06', l:'June 2026',    open:71, closed:88,  overdue:16, raised:90, avg:10.9, comp:80, cat:[28,20,17,11,14]},
+  {k:'2026-07', l:'July 2026',    open:75, closed:97,  overdue:15, raised:94, avg:10.1, comp:82, cat:[29,21,18,12,14]},
+  {k:'2026-08', l:'August 2026',  open:84, closed:112, overdue:14, raised:98, avg:9.4,  comp:86, cat:[30,22,18,12,16]}
+];
+let CUR = MONTHS.length - 1;
+
+const USERS = [
+  ['Ravi Kumar','EMP1021','Auditor','Warehouse'],   ['Kumar Selvan','EMP1044','Auditor','Warehouse'],
+  ['Manoj Pillai','EMP1090','Auditor','Production'],['Arjun Nair','EMP1112','Auditor','Production'],
+  ['Suresh Babu','EMP1123','5S Incharge','Warehouse'],['Anil Joseph','EMP1134','5S Incharge','Packing'],
+  ['Priya Menon','EMP1150','Auditor','Quality'],    ['Ramesh Iyer','EMP1161','5S Incharge','Dispatch'],
+  ['Deepa Rani','EMP1172','5S Incharge','Quality'], ['Ganesh Rao','EMP1183','5S Incharge','Maintenance'],
+  ['Prakash Shetty','EMP1194','5S Incharge','Utility'],['Latha Devi','EMP1205','5S Incharge','Office'],
+  ['Vikram Singh','EMP1216','5S Incharge','Security'],['Sanjay Gupta','EMP1227','Auditor','Stores'],
+  ['Meena Kumari','EMP1238','Auditor','Packing'],   ['Rahul Das','EMP1249','Auditor','Dispatch'],
+  ['Ajay Verma','EMP1260','Auditor','Utility'],     ['Nisha Thomas','EMP1271','Auditor','Lab'],
+  ['Karthik R','EMP1282','Auditor','Maintenance'],  ['Sunita Bai','EMP1293','Auditor','Office'],
+  ['Mohan Lal','EMP1304','Auditor','Security'],     ['Admin','EMP1001','Super Admin','All zones']
+].map(u=>({name:u[0], id:u[1], role:u[2], zone:u[3], status:'Active'}));
+
+const AUDITORS = USERS.filter(u=>u.role==='Auditor').map(u=>u.name);
+
+const DESCS = {
+  '1S':['Unused pallets stacked in aisle','Obsolete crates near line 2','Scrap not segregated at source','Damaged drums kept in bay','Expired chemical containers stored'],
+  '2S':['Floor marking faded near dock','Tools not returned to shadow board','Crates blocking fire exit','Trolley parked outside marked area','Hose not on designated hook'],
+  '3S':['Oil leakage near Machine 5','Milk spillage under filler','Dust on panel top','Condensate pooling near chiller','Drain cover soiled at CIP bay'],
+  '4S':['SOP display board outdated','Cleaning checklist not signed','Label format not standard','Zone board missing owner name','Colour coding not followed'],
+  '5S':['Previous audit point repeated','Daily 5S register not updated','Team 5S training overdue','Audit tag not closed in time','Zone self-audit not conducted']
+};
+
+/* deterministic PRNG so the demo data is stable */
+let _s = 20260826;
+function rnd(){ _s = (_s*1103515245 + 12345) & 0x7fffffff; return _s / 0x7fffffff; }
+function pick(a){ return a[Math.floor(rnd()*a.length)]; }
+
+const ISSUES = (function(){
+  const out=[]; const zw = ZONES.filter(z=>z.open+z.closed>0);
+  for(let i=1;i<=120;i++){
+    const z = zw[Math.floor(Math.pow(rnd(),1.6)*zw.length)];
+    const ck = CATK[Math.floor(Math.pow(rnd(),1.25)*5)];
+    const day = 1 + Math.floor(rnd()*26);
+    const mi = Math.max(0,Math.min(5, rnd()<0.6?5:3+Math.floor(rnd()*3)));
+    const closed = rnd() < 0.57;
+    const pr = rnd()<0.14?'Critical':(rnd()<0.45?'Major':'Minor');
+    const elapsed = Math.max(1, (5-mi)*30 + (26-day));
+    const dur = Math.min(elapsed, 2 + Math.floor(Math.pow(rnd(),1.7)*30));
+    out.push({
+      id:'VD-'+String(1000+i),
+      zone:z.n, cat:ck, catFull:CATS[CATK.indexOf(ck)],
+      desc:pick(DESCS[ck]),
+      by:pick(AUDITORS),
+      m:mi, day:day,
+      raised:MONTHS[mi].k.slice(0,7)+'-'+String(day).padStart(2,'0'),
+      status: closed?'Closed':'Open',
+      days: closed ? dur : elapsed,
+      pri:pr
+    });
+  }
+  // repeat detection: same zone + same description
+  const seen={};
+  out.forEach(o=>{ const k=o.zone+'|'+o.desc; seen[k]=(seen[k]||0)+1; o._k=k; });
+  out.forEach(o=>{ o.repeat = seen[o._k]; });
+  return out.sort((a,b)=> b.raised.localeCompare(a.raised));
+})();
+
+const REPEATS = (function(){
+  const m={};
+  ISSUES.forEach(i=>{ if(!m[i._k]) m[i._k]={zone:i.zone,desc:i.desc,cat:i.cat,n:0,months:new Set()}; m[i._k].n++; m[i._k].months.add(MONTHS[i.m].l.split(' ')[0].slice(0,3)); });
+  return Object.values(m).filter(r=>r.n>=3).sort((a,b)=>b.n-a.n).slice(0,5);
+})();
+
+const LEADER = AUDITORS.slice(0,6).map((n,i)=>({
+  name:n, audits:9-i, issues:[38,31,27,22,18,15][i], onTime:[100,96,92,88,84,79][i]
+}));
+
+const CALENDAR = [
+  {d:5,  z:'Warehouse',   s:'done'}, {d:8,  z:'Production', s:'done'},
+  {d:12, z:'Packing',     s:'done'}, {d:14, z:'Dispatch',   s:'miss'},
+  {d:18, z:'Stores',      s:'done'}, {d:20, z:'Utility',    s:'done'},
+  {d:24, z:'Quality',     s:'miss'}, {d:26, z:'Maintenance',s:'due'},
+  {d:28, z:'Lab',         s:'plan'}, {d:31, z:'Office',     s:'plan'}
+];
+
+const ALLOC = [
+  {zone:'Warehouse',   auds:['Ravi Kumar','Kumar Selvan'], date:'05 Aug', st:'Completed'},
+  {zone:'Production',  auds:['Manoj Pillai','Arjun Nair'], date:'08 Aug', st:'Completed'},
+  {zone:'Packing',     auds:['Meena Kumari'],              date:'12 Aug', st:'Completed'},
+  {zone:'Dispatch',    auds:['Rahul Das'],                 date:'14 Aug', st:'Missed'},
+  {zone:'Stores',      auds:['Sanjay Gupta'],              date:'18 Aug', st:'Completed'},
+  {zone:'Utility',     auds:['Ajay Verma'],                date:'20 Aug', st:'Completed'},
+  {zone:'Quality',     auds:['Priya Menon'],               date:'24 Aug', st:'Missed'},
+  {zone:'Maintenance', auds:['Karthik R'],                 date:'26 Aug', st:'Due today'},
+  {zone:'Lab',         auds:['Nisha Thomas'],              date:'28 Aug', st:'Scheduled'},
+  {zone:'Office',      auds:[],                            date:'31 Aug', st:'Unassigned'},
+  {zone:'Security',    auds:['Mohan Lal'],                 date:'31 Aug', st:'Scheduled'}
+];
+
+/* ============ HELPERS ============ */
+const $ = s => document.querySelector(s);
+const view = $('#view');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ini = n => n.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+const cv = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+function toast(msg){
+  const t=$('#toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+const tip = $('#tip');
+function showTip(e, html){
+  tip.innerHTML = html; tip.style.opacity = 1;
+  const r = tip.getBoundingClientRect();
+  tip.style.left = Math.min(window.innerWidth-r.width-10, Math.max(10, e.clientX - r.width/2)) + 'px';
+  tip.style.top  = (e.clientY - r.height - 12) + 'px';
+}
+function hideTip(){ tip.style.opacity = 0; }
+
+function bindTips(root){
+  root.querySelectorAll('[data-tip]').forEach(el=>{
+    el.addEventListener('mousemove', e => showTip(e, el.dataset.tip));
+    el.addEventListener('mouseleave', hideTip);
+  });
+}
+
+/* zone open counts scaled to the selected month, summing exactly */
+function zoneOpen(m){
+  const base = ZONES.map(z=>z.open), tot = base.reduce((a,b)=>a+b,0);
+  const raw = base.map(v => v/tot*m.open);
+  const out = raw.map(Math.floor);
+  let rem = m.open - out.reduce((a,b)=>a+b,0);
+  const order = raw.map((v,i)=>[v-Math.floor(v),i]).sort((a,b)=>b[0]-a[0]);
+  for(let i=0; rem>0; i++, rem--) out[order[i%order.length][1]]++;
+  return out;
+}
+function scoreColor(s){ return s>=90 ? cv('--green') : s>=75 ? cv('--amber') : cv('--red'); }
+function scorePill(s){ return s>=90 ? 'p-green' : s>=75 ? 'p-amber' : 'p-red'; }
+
+/* top-rounded bar path */
+function bar(x,y,w,h,r){
+  r = Math.min(r, w/2, h);
+  return `M${x},${y+h} L${x},${y+r} Q${x},${y} ${x+r},${y} L${x+w-r},${y} Q${x+w},${y} ${x+w},${y+r} L${x+w},${y+h} Z`;
+}
+
+/* ============ CHARTS ============ */
+function groupedChart(rows){ // rows: [{l, open, closed}]
+  const W=620, H=260, L=40, R=8, T=16, B=30;
+  const max = Math.ceil(Math.max(...rows.map(r=>Math.max(r.open,r.closed)))/20)*20;
+  const pw = W-L-R, ph = H-T-B;
+  const y = v => T + ph - (v/max)*ph;
+  const gw = pw/rows.length, bw = 17, gap = 5;
+  let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Open versus closed issues by month">`;
+  for(let i=0;i<=4;i++){
+    const v = max*i/4;
+    s += `<line class="gl" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${v}</text>`;
+  }
+  rows.forEach((r,i)=>{
+    const cx = L + gw*i + gw/2;
+    const x1 = cx - bw - gap/2, x2 = cx + gap/2;
+    s += `<path d="${bar(x1,y(r.open),bw,ph-(y(r.open)-T),4)}" fill="var(--red)" data-tip="<b>${r.l}</b><br>Open ${r.open}"/>`;
+    s += `<path d="${bar(x2,y(r.closed),bw,ph-(y(r.closed)-T),4)}" fill="var(--green)" data-tip="<b>${r.l}</b><br>Closed ${r.closed}"/>`;
+    s += `<text x="${cx}" y="${H-10}" text-anchor="middle">${r.l}</text>`;
+  });
+  return s + '</svg>';
+}
+
+function lineChart(rows){ // rows: [{l, a, b}]
+  const W=620, H=250, L=40, R=14, T=16, B=30;
+  const max = Math.ceil(Math.max(...rows.map(r=>Math.max(r.a,r.b)))/20)*20;
+  const pw = W-L-R, ph = H-T-B;
+  const x = i => L + pw*(i/(rows.length-1));
+  const y = v => T + ph - (v/max)*ph;
+  let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly trend of issues raised and closed">`;
+  for(let i=0;i<=4;i++){
+    const v = max*i/4;
+    s += `<line class="gl" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${v}</text>`;
+  }
+  const path = k => rows.map((r,i)=>`${i?'L':'M'}${x(i).toFixed(1)},${y(r[k]).toFixed(1)}`).join(' ');
+  const area = `${path('a')} L${x(rows.length-1)},${T+ph} L${L},${T+ph} Z`;
+  s += `<path d="${area}" fill="var(--blue)" opacity=".08"/>`;
+  s += `<path d="${path('a')}" fill="none" stroke="var(--blue)" stroke-width="2.5" stroke-linejoin="round"/>`;
+  s += `<path d="${path('b')}" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linejoin="round"/>`;
+  rows.forEach((r,i)=>{
+    s += `<circle cx="${x(i)}" cy="${y(r.a)}" r="4.5" fill="var(--blue)" stroke="var(--card)" stroke-width="2" data-tip="<b>${r.l}</b><br>Raised ${r.a}"/>`;
+    s += `<circle cx="${x(i)}" cy="${y(r.b)}" r="4.5" fill="var(--green)" stroke="var(--card)" stroke-width="2" data-tip="<b>${r.l}</b><br>Closed ${r.b}"/>`;
+    s += `<text x="${x(i)}" y="${H-10}" text-anchor="middle">${r.l}</text>`;
+  });
+  return s + '</svg>';
+}
+
+function sparkline(vals, color){
+  const W=120,H=26,p=2;
+  const mn=Math.min(...vals), mx=Math.max(...vals), rg=(mx-mn)||1;
+  const pt=(v,i)=>[p + (W-2*p)*(i/(vals.length-1)), H-p - (H-2*p)*((v-mn)/rg)];
+  const d = vals.map((v,i)=>{const[a,b]=pt(v,i); return `${i?'L':'M'}${a.toFixed(1)},${b.toFixed(1)}`;}).join(' ');
+  const [lx,ly]=pt(vals[vals.length-1], vals.length-1);
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+    <path d="${d}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="2.6" fill="${color}"/></svg>`;
+}
+
+function ringSvg(score){
+  const r=18, c=2*Math.PI*r;
+  return `<svg class="ring" viewBox="0 0 46 46" aria-hidden="true">
+    <circle cx="23" cy="23" r="${r}" fill="none" stroke="var(--t-grey)" stroke-width="4"/>
+    <circle cx="23" cy="23" r="${r}" fill="none" stroke="${scoreColor(score)}" stroke-width="4" stroke-linecap="round"
+      stroke-dasharray="${(c*score/100).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 23 23)"/>
+    <text x="23" y="27" text-anchor="middle">${score}</text></svg>`;
+}
+
+/* ============ NAV ============ */
+const IC = {
+  dash:'M3 3h8v8H3V3zm10 0h8v5h-8V3zM3 13h8v8H3v-8zm10-3h8v11h-8V10z',
+  audit:'M7 2h10a2 2 0 012 2v16a2 2 0 01-2 2H7a2 2 0 01-2-2V4a2 2 0 012-2zm1 5v2h8V7H8zm0 4v2h8v-2H8zm0 4v2h5v-2H8z',
+  issue:'M12 2L1 21h22L12 2zm0 6l6.5 11h-13L12 8zm-1 3v4h2v-4h-2zm0 5v2h2v-2h-2z',
+  user:'M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5 0-9 2.5-9 5.5V22h18v-2.5c0-3-4-5.5-9-5.5z',
+  zone:'M4 3h7v7H4V3zm9 0h7v7h-7V3zM4 12h7v9H4v-9zm9 0h7v9h-7v-9z',
+  alloc:'M4 4h16v3H4V4zm0 5h10v3H4V9zm0 5h13v3H4v-3zm0 5h7v2H4v-2z',
+  rep:'M5 21V9h4v12H5zm5 0V3h4v18h-4zm5 0v-8h4v8h-4z',
+  set:'M12 8a4 4 0 100 8 4 4 0 000-8zm9.4 4a7.4 7.4 0 00-.1-1.2l2-1.6-2-3.4-2.4 1a7.6 7.6 0 00-2-1.2L16.5 3h-4l-.4 2.6c-.7.3-1.4.7-2 1.2l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 000 2.4l-2 1.6 2 3.4 2.4-1c.6.5 1.3.9 2 1.2l.4 2.6h4l.4-2.6c.7-.3 1.4-.7 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2z'
+};
+const PAGES = [
+  ['dashboard','Dashboard','5S Dashboard','dash',null],
+  ['audits','Audits','Audit Calendar','audit',null],
+  ['issues','Issues','Issue Register','issue','84'],
+  ['users','Users','Users','user',null],
+  ['zones','Zones','Zones','zone',null],
+  ['allocation','Allocation','Audit Allocation','alloc',null],
+  ['reports','Reports','Reports','rep',null],
+  ['settings','Settings','Settings','set',null]
+];
+let route = 'dashboard';
+
+$('#nav').innerHTML = PAGES.map(p=>`
+  <button data-r="${p[0]}" class="${p[0]===route?'on':''}">
+    <svg viewBox="0 0 24 24"><path d="${IC[p[3]]}"/></svg>${p[1]}
+    ${p[4]?`<span class="badge">${p[4]}</span>`:''}
+  </button>`).join('');
+
+$('#nav').addEventListener('click', e=>{
+  const b = e.target.closest('button[data-r]'); if(!b) return;
+  route = b.dataset.r; render();
+});
+
+$('#month').innerHTML = MONTHS.map((m,i)=>`<option value="${i}" ${i===CUR?'selected':''}>${m.l}</option>`).join('');
+$('#month').addEventListener('change', e=>{ CUR = +e.target.value; render(); toast('Showing ' + MONTHS[CUR].l); });
+$('#bell').addEventListener('click', ()=> toast('3 zones have issues open past the 15-day escalation limit'));
+$('#gsearch').addEventListener('keydown', e=>{
+  if(e.key === 'Enter'){ route='issues'; ST.issues.q = e.target.value; render(); }
+});
+
+/* ============ SCREENS ============ */
+const ST = {
+  users:{sort:'name', dir:1, page:0, q:'', role:'all'},
+  issues:{sort:'raised', dir:-1, q:'', zone:'all', cat:'all', status:'all'},
+  reports:{zone:'all', aud:'all', cat:'all', status:'all', from:0, to:5, sort:'days', dir:-1},
+  alloc: JSON.parse(JSON.stringify(ALLOC))
+};
+
+function render(){
+  const p = PAGES.find(x=>x[0]===route);
+  $('#ptitle').textContent = p[2];
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on', b.dataset.r===route));
+  view.innerHTML = ({dashboard,audits,issues,users,zones,allocation,reports,settings})[route]();
+  wire();
+  bindTips(view);
+  window.scrollTo(0,0);
+}
+
+/* ---- Dashboard ---- */
+function dashboard(){
+  const m = MONTHS[CUR], prev = MONTHS[Math.max(0,CUR-1)];
+  const zo = zoneOpen(m);
+  const zrows = ZONES.map((z,i)=>({n:z.n, v:zo[i], score:z.score})).sort((a,b)=>b.v-a.v);
+  const catMax = Math.max(...m.cat);
+  const hist = k => MONTHS.slice(0,CUR+1).map(x=>x[k]);
+  const delta = (a,b)=>{ if(!b) return ''; const d=((a-b)/b*100); const up=d>=0;
+    return `<span class="${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(d).toFixed(0)}%</span> vs ${prev.l.split(' ')[0]}`; };
+
+  const age = [
+    {l:'0–7 days',   v:Math.round(m.open*0.45), c:'var(--green)'},
+    {l:'8–15 days',  v:Math.round(m.open*0.29), c:'var(--amber)'},
+    {l:'16–30 days', v:Math.round(m.open*0.17), c:'#E86C1A'},
+    {l:'30+ days',   v:0,                        c:'var(--red)'}
+  ];
+  age[3].v = m.open - age[0].v - age[1].v - age[2].v;
+  const ageTot = m.open;
+
+  const kpi = (lab,val,tint,color,icon,trend,spark)=>`
+    <div class="kpi">
+      <div class="ic" style="background:${tint}"><svg viewBox="0 0 24 24" fill="${color}"><path d="${icon}"/></svg></div>
+      <div class="lab">${lab}</div>
+      <div class="v">${val}</div>
+      <div class="tr">${trend}</div>
+      ${sparkline(spark, color)}
+    </div>`;
+
+  return `
+  <div class="pagehead">
+    <div><h2>5S Dashboard</h2><div class="sub">Plant VD01 · ${m.l} · 11 zones · 22 auditors</div></div>
+    <div class="acts">
+      <button class="btn ghost" data-act="export">Export summary</button>
+      <button class="btn" data-act="cycle">Start new audit cycle</button>
+    </div>
+  </div>
+
+  <div class="grid kpis">
+    ${kpi('Audit compliance', m.comp+'%', 'var(--t-blue)', cv('--blue'), IC.audit, `${Math.round(m.comp*22/100)} of 22 audits done`, hist('comp'))}
+    ${kpi('Open issues', m.open, 'var(--t-red)', cv('--red'), IC.issue, delta(m.open, prev.open), hist('open'))}
+    ${kpi('Closed issues', m.closed, 'var(--t-green)', cv('--green'), 'M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z', delta(m.closed, prev.closed), hist('closed'))}
+    ${kpi('Overdue', m.overdue, 'var(--t-amber)', cv('--amber'), 'M12 2a10 10 0 100 20 10 10 0 000-20zm1 11h-2V6h2v7zm0 4h-2v-2h2v2z', 'past 15-day limit', hist('overdue'))}
+    ${kpi('Avg closure', m.avg+' d', 'var(--t-grey)', cv('--muted'), 'M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.6V6h-2v7.4l5 3 1-1.7-4-2.1z', `target 7 d · <span class="${m.avg<=7?'up':'down'}">${(m.avg-7).toFixed(1)} d over</span>`, hist('avg'))}
+  </div>
+
+  <div class="grid c60-40">
+    <div class="card">
+      <div class="cardhead">
+        <div><h3>Open vs closed issues</h3><div class="note">Rolling six months, plant-wide</div></div>
+        <div class="legend"><span><i style="background:var(--red)"></i>Open</span><span><i style="background:var(--green)"></i>Closed</span></div>
+      </div>
+      ${groupedChart(MONTHS.map(x=>({l:x.l.slice(0,3), open:x.open, closed:x.closed})))}
+    </div>
+    <div class="card">
+      <h3>5S category analysis</h3>
+      <div class="note">${m.raised} issues raised in ${m.l.split(' ')[0]}</div>
+      ${CATS.map((c,i)=>`
+        <div class="barrow" data-tip="<b>${c}</b><br>${m.cat[i]} issues · ${(m.cat[i]/m.raised*100).toFixed(0)}% of month">
+          <div class="nm">${c}</div>
+          <div class="track"><div class="fill" style="width:${m.cat[i]/catMax*100}%"></div></div>
+          <div class="n">${m.cat[i]}</div>
+        </div>`).join('')}
+      <div class="demo" style="margin-top:12px">Sort (1S) leads every month — the plant's biggest gap is removing what does not belong, not cleaning.</div>
+    </div>
+  </div>
+
+  <div class="grid c60-40">
+    <div class="card">
+      <h3>Zone-wise open issues</h3>
+      <div class="note">Click a zone to open its issue register</div>
+      ${zrows.filter(z=>z.v>0).map(z=>`
+        <div class="barrow zjump" data-zone="${z.n}" style="cursor:pointer" data-tip="<b>${z.n}</b><br>${z.v} open · 5S score ${z.score}%">
+          <div class="nm">${z.n}</div>
+          <div class="track"><div class="fill" style="width:${z.v/zrows[0].v*100}%; background:${scoreColor(z.score)}"></div></div>
+          <div class="n">${z.v}</div>
+        </div>`).join('')}
+      <div class="demo" style="margin-top:12px">Bar colour is the zone's 5S score band, not its issue count — a long green bar is a big zone doing well.</div>
+    </div>
+    <div class="card">
+      <h3>Issue ageing</h3>
+      <div class="note">How long the ${ageTot} open issues have been waiting</div>
+      <div class="stack">
+        ${age.map(a=>`<span style="background:${a.c}; width:${a.v/ageTot*100}%" data-tip="<b>${a.l}</b><br>${a.v} issues"></span>`).join('')}
+      </div>
+      <div class="legrid">
+        ${age.map(a=>`<div class="leg"><i style="background:${a.c}"></i>${a.l}<b>${a.v}</b></div>`).join('')}
+      </div>
+      <div class="demo" style="margin-top:16px">${age[3].v} issues are past 30 days and have escalated to the Plant Head.</div>
+    </div>
+  </div>
+
+  <div class="grid c50">
+    <div class="card">
+      <h3>Repeat issues</h3>
+      <div class="note">Same problem, same zone, raised in three or more audits</div>
+      ${REPEATS.map(r=>`
+        <div class="repeat">
+          <span class="pill p-blue">${r.cat}</span>
+          <div><div class="txt">${esc(r.desc)}</div><div class="mt">${r.zone} · ${[...r.months].join(', ')}</div></div>
+          <span class="ct pill p-red">×${r.n}</span>
+        </div>`).join('')}
+      <div class="demo" style="margin-top:12px">A repeat is a CAPA failure, not an audit finding. These need a root cause, not another photo.</div>
+    </div>
+    <div class="card">
+      <h3>Zone 5S scorecard</h3>
+      <div class="note legend" style="gap:14px">
+        <span><i style="background:var(--green)"></i>90 and above</span>
+        <span><i style="background:var(--amber)"></i>75–89</span>
+        <span><i style="background:var(--red)"></i>below 75</span>
+      </div>
+      <div class="tw"><table>
+        <thead><tr><th>Zone</th><th>Incharge</th><th class="num">Open</th><th class="num">Closed</th><th class="num">Score</th></tr></thead>
+        <tbody>${[...ZONES].sort((a,b)=>b.score-a.score).map(z=>`
+          <tr><td class="strong">${z.n}</td><td class="rowsub">${z.ic}</td>
+          <td class="num">${z.open}</td><td class="num">${z.closed}</td>
+          <td class="num"><span class="pill ${scorePill(z.score)}">${z.score}%</span></td></tr>`).join('')}
+        </tbody></table></div>
+    </div>
+  </div>
+
+  <div class="grid c50">
+    <div class="card">
+      <h3>Auditor performance</h3>
+      <div class="note">Audits completed and issues raised in ${m.l.split(' ')[0]}</div>
+      ${LEADER.map((a,i)=>`
+        <div class="lead">
+          <span class="rank">${i+1}</span>
+          <div class="av sm">${ini(a.name)}</div>
+          <div><div class="nm">${a.name}</div><div class="mt">${a.audits} audits · ${a.issues} issues raised</div></div>
+          <div class="sc"><b>${a.onTime}%</b><span>on schedule</span></div>
+        </div>`).join('')}
+    </div>
+    <div class="card">
+      <h3>Latest issues</h3>
+      <div class="note">Most recent findings across all zones</div>
+      <div class="tw"><table>
+        <thead><tr><th>Issue</th><th>Zone</th><th>Category</th><th>Status</th></tr></thead>
+        <tbody>${ISSUES.slice(0,6).map(i=>`
+          <tr><td><div class="strong">${esc(i.desc)}</div><div class="rowsub mono">${i.id}</div></td>
+          <td>${i.zone}</td><td><span class="pill p-blue">${i.cat}</span></td>
+          <td><span class="pill ${i.status==='Open'?'p-red':'p-green'}">${i.status.toUpperCase()}</span></td></tr>`).join('')}
+        </tbody></table></div>
+    </div>
+  </div>
+
+  <div class="demo">Prototype with representative data for Plant VD01. Wire the same layout to the live audit database and every number, chart and filter here keeps working.</div>`;
+}
+
+/* ---- Audits (calendar) ---- */
+function audits(){
+  const first = 5; // 1 Aug 2026 is a Saturday, Monday-first grid
+  const days = 31, today = 26;
+  const map = {}; CALENDAR.forEach(c=>map[c.d]=c);
+  const cells = [];
+  for(let i=0;i<first;i++) cells.push('<div class="day empty"></div>');
+  for(let d=1; d<=days; d++){
+    const e = map[d];
+    cells.push(`<div class="day ${d===today?'today':''}">
+      <div class="dn">${d}</div>
+      ${e?`<div class="ev ${e.s}">${e.z}</div>`:''}
+    </div>`);
+  }
+  const counts = CALENDAR.reduce((a,c)=>(a[c.s]=(a[c.s]||0)+1,a),{});
+  return `
+  <div class="pagehead">
+    <div><h2>Audit Calendar</h2><div class="sub">${MONTHS[CUR].l} · ${CALENDAR.length} audits planned</div></div>
+    <div class="acts">
+      <div class="legend">
+        <span><i style="background:var(--green)"></i>Completed ${counts.done||0}</span>
+        <span><i style="background:var(--red)"></i>Missed ${counts.miss||0}</span>
+        <span><i style="background:var(--amber)"></i>Due today ${counts.due||0}</span>
+        <span><i style="background:var(--blue)"></i>Scheduled ${counts.plan||0}</span>
+      </div>
+      <button class="btn" data-act="schedule">Schedule audit</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="cal">
+      ${['MON','TUE','WED','THU','FRI','SAT','SUN'].map(d=>`<div class="dh">${d}</div>`).join('')}
+      ${cells.join('')}
+    </div>
+  </div>
+  <div class="card">
+    <h3>Missed audits need a reason</h3>
+    <div class="note">Two zones were not audited on their planned date this cycle</div>
+    <div class="tw"><table>
+      <thead><tr><th>Zone</th><th>Planned</th><th>Auditor</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>${CALENDAR.filter(c=>c.s==='miss').map(c=>{
+        const a = ST.alloc.find(x=>x.zone===c.z);
+        return `<tr><td class="strong">${c.z}</td><td>${c.d} Aug 2026</td>
+        <td>${a && a.auds.length? a.auds.join(', ') : '—'}</td>
+        <td><span class="pill p-red">MISSED</span></td>
+        <td><button class="btn sm ghost" data-act="reschedule">Reschedule</button></td></tr>`;}).join('')}
+      </tbody></table></div>
+  </div>`;
+}
+
+/* ---- Issues register ---- */
+function issues(){
+  const s = ST.issues;
+  let rows = ISSUES.filter(i =>
+    (s.zone==='all' || i.zone===s.zone) &&
+    (s.cat==='all' || i.cat===s.cat) &&
+    (s.status==='all' || i.status===s.status) &&
+    (!s.q || (i.desc+i.zone+i.id+i.by).toLowerCase().includes(s.q.toLowerCase()))
+  );
+  rows = sortRows(rows, s);
+  const cols = [['id','Issue ID'],['desc','Finding'],['zone','Zone'],['cat','5S'],['pri','Priority'],['by','Raised by'],['raised','Raised on'],['days','Days open'],['status','Status']];
+  return `
+  <div class="pagehead">
+    <div><h2>Issue Register</h2><div class="sub">${rows.length} of ${ISSUES.length} issues match the current filters</div></div>
+    <div class="acts"><button class="btn ghost" data-act="export">Export CSV</button></div>
+  </div>
+  <div class="card">
+    <div class="filters" style="margin-bottom:16px">
+      <div class="fg"><span>Search</span><input type="text" id="f-q" value="${esc(s.q)}" placeholder="Finding, zone, auditor…" style="width:230px"></div>
+      <div class="fg"><span>Zone</span>${sel('f-zone', ['all',...ZONES.map(z=>z.n)], s.zone, 'All zones')}</div>
+      <div class="fg"><span>5S category</span>${sel('f-cat', ['all',...CATK], s.cat, 'All categories')}</div>
+      <div class="fg"><span>Status</span>${sel('f-status', ['all','Open','Closed'], s.status, 'All statuses')}</div>
+      <div class="fg"><span>&nbsp;</span><button class="btn ghost" data-act="clear">Clear</button></div>
+    </div>
+    <div class="tw"><table>
+      <thead><tr>${cols.map(c=>`<th class="s ${c[0]==='days'?'num':''}" data-sort="${c[0]}" data-t="issues">${c[1]}${s.sort===c[0]?(s.dir>0?' ▲':' ▼'):''}</th>`).join('')}</tr></thead>
+      <tbody>${rows.slice(0,40).map(i=>`
+        <tr>
+          <td class="mono">${i.id}</td>
+          <td><div class="strong">${esc(i.desc)}</div>${i.repeat>=3?`<div class="rowsub">repeat finding · seen ${i.repeat}×</div>`:''}</td>
+          <td>${i.zone}</td>
+          <td><span class="pill p-blue">${i.cat}</span></td>
+          <td><span class="pill ${i.pri==='Critical'?'p-red':i.pri==='Major'?'p-amber':'p-navy'}">${i.pri.toUpperCase()}</span></td>
+          <td class="rowsub">${i.by}</td>
+          <td class="rowsub mono">${i.raised}</td>
+          <td class="num ${i.status==='Open'&&i.days>15?'strong':''}" ${i.status==='Open'&&i.days>15?'style="color:var(--red)"':''}>${i.days}</td>
+          <td><span class="pill ${i.status==='Open'?'p-red':'p-green'}">${i.status.toUpperCase()}</span></td>
+        </tr>`).join('')}
+      </tbody></table></div>
+    <div class="tfoot"><span>Showing ${Math.min(40,rows.length)} of ${rows.length} issues</span>
+    <span>Days open shown in red once past the 15-day escalation limit</span></div>
+  </div>`;
+}
+
+/* ---- Users ---- */
+function users(){
+  const s = ST.users;
+  let rows = USERS.filter(u =>
+    (s.role==='all' || u.role===s.role) &&
+    (!s.q || (u.name+u.id+u.zone).toLowerCase().includes(s.q.toLowerCase())));
+  rows = sortRows(rows, s);
+  const per = 8, pages = Math.max(1, Math.ceil(rows.length/per));
+  s.page = Math.min(s.page, pages-1);
+  const page = rows.slice(s.page*per, s.page*per+per);
+  const rp = r => r==='Auditor'?'p-blue' : r==='5S Incharge'?'p-amber' : 'p-navy';
+  const cols=[['name','Name'],['id','Employee ID'],['role','Role'],['zone','Assigned zone'],['status','Status']];
+  return `
+  <div class="pagehead">
+    <div><h2>Users</h2><div class="sub">${USERS.filter(u=>u.role==='Auditor').length} auditors · ${USERS.filter(u=>u.role==='5S Incharge').length} area incharges · 1 super admin</div></div>
+    <div class="acts"><button class="btn" data-act="adduser">+ Add user</button></div>
+  </div>
+  <div class="card">
+    <div class="filters" style="margin-bottom:16px">
+      <div class="fg"><span>Search</span><input type="text" id="u-q" value="${esc(s.q)}" placeholder="Name, ID or zone" style="width:230px"></div>
+      <div class="fg"><span>Role</span>${sel('u-role',['all','Auditor','5S Incharge','Super Admin'], s.role, 'All roles')}</div>
+    </div>
+    <div class="tw"><table>
+      <thead><tr>${cols.map(c=>`<th class="s" data-sort="${c[0]}" data-t="users">${c[1]}${s.sort===c[0]?(s.dir>0?' ▲':' ▼'):''}</th>`).join('')}<th style="text-align:right">Actions</th></tr></thead>
+      <tbody>${page.map(u=>`
+        <tr>
+          <td><div style="display:flex; align-items:center; gap:10px"><div class="av sm">${ini(u.name)}</div><span class="strong">${u.name}</span></div></td>
+          <td class="mono">${u.id}</td>
+          <td><span class="pill ${rp(u.role)}">${u.role}</span></td>
+          <td>${u.zone}</td>
+          <td><span class="pill p-green">ACTIVE</span></td>
+          <td style="text-align:right; white-space:nowrap">
+            <button class="icoact" data-act="edituser" title="Edit"><svg viewBox="0 0 24 24"><path d="M3 17.2V21h3.8L17.8 10 14 6.2 3 17.2zM20.7 7.1a1 1 0 000-1.4l-2.4-2.4a1 1 0 00-1.4 0l-1.8 1.8L19 8.9l1.7-1.8z"/></svg></button>
+            <button class="icoact del" data-act="deluser" title="Remove"><svg viewBox="0 0 24 24"><path d="M6 19a2 2 0 002 2h8a2 2 0 002-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+          </td>
+        </tr>`).join('')}
+      </tbody></table></div>
+    <div class="tfoot">
+      <span>Showing ${rows.length? s.page*per+1 : 0}–${Math.min(rows.length,(s.page+1)*per)} of ${rows.length}</span>
+      <span style="display:flex; gap:8px">
+        <button class="btn sm ghost" data-act="prev" ${s.page===0?'disabled':''}>Previous</button>
+        <button class="btn sm ghost" data-act="next" ${s.page>=pages-1?'disabled':''}>Next</button>
+      </span>
+    </div>
+  </div>`;
+}
+
+/* ---- Zones ---- */
+function zones(){
+  return `
+  <div class="pagehead">
+    <div><h2>Zones</h2><div class="sub">11 audit zones · ${ZONES.reduce((a,z)=>a+z.cp,0)} checkpoints in total</div></div>
+    <div class="acts"><button class="btn" data-act="addzone">+ Add zone</button></div>
+  </div>
+  <div class="zgrid">
+    ${ZONES.map(z=>`
+      <div class="zone">
+        ${ringSvg(z.score)}
+        <div class="zn">${z.n}</div>
+        <div class="zm">${z.cp} checkpoints</div>
+        <div class="zm">Incharge: ${z.ic}</div>
+        <div class="zstats">
+          <div class="zs">Open<b style="color:var(--red)">${z.open}</b></div>
+          <div class="zs">Closed<b style="color:var(--green)">${z.closed}</b></div>
+          <div class="zs">Avg closure<b>${(6+z.open*0.35).toFixed(1)} d</b></div>
+        </div>
+      </div>`).join('')}
+  </div>
+  <div class="card">
+    <h3>Zone QR codes</h3>
+    <div class="note">Each zone board carries a printed QR code. Scanning it opens the right checklist and stamps the audit with location and time, so an audit cannot be filed for the wrong area or from the canteen.</div>
+    <button class="btn ghost" data-act="qr">Print QR sheet for all zones</button>
+  </div>`;
+}
+
+/* ---- Allocation ---- */
+function allocation(){
+  const load = {};
+  ST.alloc.forEach(a=>a.auds.forEach(n=>load[n]=(load[n]||0)+1));
+  const stp = s => s==='Completed'?'p-green' : s==='Missed'?'p-red' : s==='Due today'?'p-amber' : s==='Unassigned'?'p-navy':'p-blue';
+  const free = AUDITORS.filter(a=>true);
+  return `
+  <div class="pagehead">
+    <div><h2>Audit Allocation</h2><div class="sub">${MONTHS[CUR].l} · ${ST.alloc.filter(a=>a.auds.length).length} of ${ST.alloc.length} zones assigned</div></div>
+    <div class="acts"><button class="btn" data-act="savealloc">Save allocation</button></div>
+  </div>
+  <div class="grid c-alloc">
+    <div class="card">
+      <div class="tw"><table>
+        <thead><tr><th>Zone</th><th style="min-width:260px">Assigned auditors</th><th>Audit date</th><th>Status</th></tr></thead>
+        <tbody>${ST.alloc.map((a,ri)=>`
+          <tr>
+            <td class="strong">${a.zone}</td>
+            <td>
+              ${a.auds.map((n,ci)=>`<span class="chip"><span class="av sm">${ini(n)}</span>${n.split(' ')[0]}<button data-act="rmaud" data-r="${ri}" data-c="${ci}" aria-label="Remove ${n}">×</button></span>`).join('')}
+              <span class="chip add" data-act="addaud" data-r="${ri}">+ Add</span>
+            </td>
+            <td class="rowsub mono">${a.date}</td>
+            <td><span class="pill ${stp(a.st)}">${a.st.toUpperCase()}</span></td>
+          </tr>`).join('')}
+        </tbody></table></div>
+    </div>
+    <div class="card">
+      <h3>Available auditors</h3>
+      <div class="note">Zones already assigned this cycle</div>
+      ${free.map(n=>`
+        <div class="aud">
+          <div class="av sm">${ini(n)}</div>
+          <div><div class="nm">${n.split(' ')[0]} ${n.split(' ')[1]||''}</div><div class="mt">${USERS.find(u=>u.name===n).zone}</div></div>
+          <span class="load">${load[n]||0} ${(load[n]||0)===1?'zone':'zones'}</span>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+/* ---- Reports ---- */
+function reports(){
+  const s = ST.reports;
+  const range = MONTHS.slice(s.from, s.to+1);
+  let rows = ISSUES.filter(i =>
+    i.m>=s.from && i.m<=s.to &&
+    (s.zone==='all'||i.zone===s.zone) && (s.aud==='all'||i.by===s.aud) &&
+    (s.cat==='all'||i.cat===s.cat) && (s.status==='all'||i.status===s.status));
+  rows = sortRows(rows, s);
+  const closedRows = rows.filter(r=>r.status==='Closed');
+  const avg = closedRows.length ? (closedRows.reduce((a,b)=>a+b.days,0)/closedRows.length).toFixed(1) : '—';
+  const cols=[['id','Issue ID'],['zone','Zone'],['cat','5S'],['by','Raised by'],['raised','Raised on'],['days','Days open'],['status','Status']];
+  return `
+  <div class="pagehead">
+    <div><h2>Reports</h2><div class="sub">${range[0].l} – ${range[range.length-1].l} · ${rows.length} issues in scope</div></div>
+    <div class="acts">
+      <button class="btn ghost" data-act="export">Export PDF</button>
+      <button class="btn" data-act="export">Export Excel</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="filters">
+      <div class="fg"><span>From</span>${sel('r-from', MONTHS.map((m,i)=>i), s.from, null, MONTHS.map(m=>m.l))}</div>
+      <div class="fg"><span>To</span>${sel('r-to', MONTHS.map((m,i)=>i), s.to, null, MONTHS.map(m=>m.l))}</div>
+      <div class="fg"><span>Zone</span>${sel('r-zone',['all',...ZONES.map(z=>z.n)], s.zone,'All zones')}</div>
+      <div class="fg"><span>Auditor</span>${sel('r-aud',['all',...AUDITORS], s.aud,'All auditors')}</div>
+      <div class="fg"><span>5S category</span>${sel('r-cat',['all',...CATK], s.cat,'All categories')}</div>
+      <div class="fg"><span>Status</span>${sel('r-status',['all','Open','Closed'], s.status,'All statuses')}</div>
+    </div>
+  </div>
+
+  <div class="grid c60-40">
+    <div class="card">
+      <div class="cardhead">
+        <div><h3>Monthly trend</h3><div class="note">Issues raised against issues closed</div></div>
+        <div class="legend"><span><i style="background:var(--blue)"></i>Raised</span><span><i style="background:var(--green)"></i>Closed</span></div>
+      </div>
+      ${lineChart(range.map(m=>({l:m.l.slice(0,3), a:m.raised, b:m.closed})))}
+    </div>
+    <div class="card">
+      <h3>Closure performance</h3>
+      <div class="note">Against the 7-day plant target</div>
+      <div style="display:flex; gap:26px; margin:8px 0 18px">
+        <div><div class="lab">Avg closure</div><div style="font-size:34px; font-weight:700; letter-spacing:-.03em">${avg} d</div></div>
+        <div><div class="lab">Closed</div><div style="font-size:34px; font-weight:700; letter-spacing:-.03em">${closedRows.length}</div></div>
+        <div><div class="lab">Still open</div><div style="font-size:34px; font-weight:700; letter-spacing:-.03em; color:var(--red)">${rows.length-closedRows.length}</div></div>
+      </div>
+      ${range.map(m=>`
+        <div class="barrow" data-tip="<b>${m.l}</b><br>Avg ${m.avg} days to close">
+          <div class="nm">${m.l.split(' ')[0]}</div>
+          <div class="track"><div class="fill" style="width:${m.avg/16*100}%; background:${m.avg<=7?'var(--green)':m.avg<=12?'var(--amber)':'var(--red)'}"></div></div>
+          <div class="n">${m.avg}</div>
+        </div>`).join('')}
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Issue detail</h3>
+    <div class="note">Days open turns red past the 15-day escalation limit</div>
+    <div class="tw"><table>
+      <thead><tr>${cols.map(c=>`<th class="s ${c[0]==='days'?'num':''}" data-sort="${c[0]}" data-t="reports">${c[1]}${s.sort===c[0]?(s.dir>0?' ▲':' ▼'):''}</th>`).join('')}</tr></thead>
+      <tbody>${rows.slice(0,25).map(i=>`
+        <tr>
+          <td class="mono">${i.id}</td><td class="strong">${i.zone}</td>
+          <td><span class="pill p-blue">${i.cat}</span></td>
+          <td class="rowsub">${i.by}</td><td class="rowsub mono">${i.raised}</td>
+          <td class="num" ${i.days>15?'style="color:var(--red); font-weight:600"':''}>${i.days}</td>
+          <td><span class="pill ${i.status==='Open'?'p-red':'p-green'}">${i.status.toUpperCase()}</span></td>
+        </tr>`).join('')}
+      </tbody></table></div>
+    <div class="tfoot"><span>Showing ${Math.min(25,rows.length)} of ${rows.length} issues</span></div>
+  </div>`;
+}
+
+/* ---- Settings ---- */
+function settings(){
+  return `
+  <div class="pagehead"><div><h2>Settings</h2><div class="sub">Plant VD01 · applies to every zone and auditor</div></div></div>
+  <div class="grid c50">
+    <div class="card">
+      <h3>Escalation matrix</h3>
+      <div class="note">An open issue is escalated automatically once it passes each limit</div>
+      <div class="esc">
+        <div class="dd">&gt; 7 days</div><div>Email the <b>Area Head</b></div>
+        <div class="dd">&gt; 15 days</div><div>Email the <b>Plant Head</b> and flag on the dashboard</div>
+        <div class="dd">&gt; 30 days</div><div>Email the <b>Factory Manager</b>, issue marked chronic</div>
+      </div>
+      <div class="demo" style="margin-top:16px">14 issues are currently escalated. Changing a limit re-evaluates every open issue overnight.</div>
+    </div>
+    <div class="card">
+      <h3>Targets</h3>
+      <div class="note">The numbers the dashboard measures every zone against</div>
+      <div class="setrow"><div><div class="t">Closure target</div><div class="d">Days allowed to close an issue</div></div><div class="r"><input type="text" value="7" style="width:64px; text-align:center"></div></div>
+      <div class="setrow"><div><div class="t">Minimum 5S score</div><div class="d">Below this a zone shows red</div></div><div class="r"><input type="text" value="75" style="width:64px; text-align:center"></div></div>
+      <div class="setrow"><div><div class="t">Audits per zone per month</div><div class="d">Used to calculate audit compliance</div></div><div class="r"><input type="text" value="2" style="width:64px; text-align:center"></div></div>
+    </div>
+  </div>
+  <div class="grid c50">
+    <div class="card">
+      <h3>Notifications</h3>
+      <div class="note">Sent to the app and to the registered email address</div>
+      ${[['New audit assigned','To the auditor, when allocation is saved',1],
+         ['New issue raised','To the area incharge, immediately',1],
+         ['Issue closed','To the auditor who raised it, for verification',1],
+         ['Issue overdue','To the incharge and area head, daily at 09:00',1],
+         ['Weekly zone summary','To the plant head, Monday 08:00',0]].map((n,i)=>`
+        <div class="setrow"><div><div class="t">${n[0]}</div><div class="d">${n[1]}</div></div>
+        <div class="r"><button class="tog ${n[2]?'on':''}" data-act="tog" aria-label="Toggle ${n[0]}"></button></div></div>`).join('')}
+    </div>
+    <div class="card">
+      <h3>Audit integrity</h3>
+      <div class="note">Controls that keep an audit honest</div>
+      ${[['Require QR scan to open a zone','Auditor must scan the zone board',1],
+         ['Stamp photos with GPS and time','Proves the auditor was on the floor',1],
+         ['Require an after photo to close','No closure without visual evidence',1],
+         ['Allow photos from gallery','Off means camera only, no old photos',0]].map(n=>`
+        <div class="setrow"><div><div class="t">${n[0]}</div><div class="d">${n[1]}</div></div>
+        <div class="r"><button class="tog ${n[2]?'on':''}" data-act="tog" aria-label="Toggle ${n[0]}"></button></div></div>`).join('')}
+    </div>
+  </div>`;
+}
+
+/* ============ SHARED UI BITS ============ */
+function sel(id, vals, cur, allLabel, labels){
+  return `<select id="${id}">` + vals.map((v,i)=>{
+    const lab = labels ? labels[i] : (v==='all' ? allLabel : v);
+    return `<option value="${v}" ${String(v)===String(cur)?'selected':''}>${lab}</option>`;
+  }).join('') + '</select>';
+}
+
+function sortRows(rows, s){
+  return [...rows].sort((a,b)=>{
+    const x=a[s.sort], y=b[s.sort];
+    if(typeof x==='number' && typeof y==='number') return (x-y)*s.dir;
+    return String(x).localeCompare(String(y))*s.dir;
+  });
+}
+
+/* ============ EVENTS ============ */
+function wire(){
+  view.querySelectorAll('th.s').forEach(th=>{
+    th.addEventListener('click', ()=>{
+      const s = ST[th.dataset.t];
+      if(s.sort===th.dataset.sort) s.dir *= -1; else { s.sort=th.dataset.sort; s.dir=1; }
+      render();
+    });
+  });
+
+  const bindSel = (id, obj, key, num) => {
+    const el = view.querySelector('#'+id); if(!el) return;
+    el.addEventListener('change', e=>{ obj[key] = num ? +e.target.value : e.target.value; if(obj.page!==undefined) obj.page=0; render(); });
+  };
+  bindSel('f-zone', ST.issues,'zone'); bindSel('f-cat', ST.issues,'cat'); bindSel('f-status', ST.issues,'status');
+  bindSel('u-role', ST.users,'role');
+  bindSel('r-zone', ST.reports,'zone'); bindSel('r-aud', ST.reports,'aud');
+  bindSel('r-cat', ST.reports,'cat'); bindSel('r-status', ST.reports,'status');
+  bindSel('r-from', ST.reports,'from',1); bindSel('r-to', ST.reports,'to',1);
+
+  const bindQ = (id, obj) => {
+    const el = view.querySelector('#'+id); if(!el) return;
+    el.addEventListener('input', e=>{
+      obj.q = e.target.value; if(obj.page!==undefined) obj.page=0;
+      render();
+      const n = view.querySelector('#'+id); if(n){ n.focus(); n.setSelectionRange(n.value.length,n.value.length); }
+    });
+  };
+  bindQ('f-q', ST.issues); bindQ('u-q', ST.users);
+
+  view.querySelectorAll('.zjump').forEach(el=>el.addEventListener('click',()=>{
+    ST.issues.zone = el.dataset.zone; ST.issues.status='Open'; route='issues'; render();
+  }));
+
+  view.addEventListener('click', e=>{
+    const t = e.target.closest('[data-act]'); if(!t) return;
+    const a = t.dataset.act;
+    if(a==='tog'){ t.classList.toggle('on'); toast(t.classList.contains('on')?'Setting enabled':'Setting disabled'); return; }
+    if(a==='prev'){ ST.users.page--; render(); return; }
+    if(a==='next'){ ST.users.page++; render(); return; }
+    if(a==='clear'){ ST.issues={sort:'raised',dir:-1,q:'',zone:'all',cat:'all',status:'all'}; render(); return; }
+    if(a==='rmaud'){ ST.alloc[+t.dataset.r].auds.splice(+t.dataset.c,1); reAlloc(); render(); return; }
+    if(a==='addaud'){ openAddMenu(t, +t.dataset.r); return; }
+    if(a==='savealloc'){ toast('Allocation saved — ' + ST.alloc.filter(x=>x.auds.length).length + ' zones notified'); return; }
+    if(a==='export'){ toast('Export runs against the live audit database in the production build'); return; }
+    if(a==='qr'){ toast('QR sheet queued for all 11 zones'); return; }
+    if(a==='cycle'){ toast('September 2026 audit cycle created — allocate auditors next'); return; }
+    if(a==='schedule'||a==='reschedule'){ toast('Opens the audit scheduler'); return; }
+    if(a==='adduser'||a==='edituser'){ toast('Opens the user form'); return; }
+    if(a==='deluser'){ toast('Users are deactivated, never deleted — audit history must stay intact'); return; }
+    if(a==='addzone'){ toast('Opens the new zone form with its checkpoint list'); return; }
+  });
+}
+
+function reAlloc(){
+  ST.alloc.forEach(a=>{ if(!a.auds.length && a.st!=='Completed' && a.st!=='Missed') a.st='Unassigned';
+    else if(a.auds.length && a.st==='Unassigned') a.st='Scheduled'; });
+}
+
+let openMenu = null;
+function openAddMenu(anchor, rowIdx){
+  closeMenu();
+  const row = ST.alloc[rowIdx];
+  const avail = AUDITORS.filter(n=>!row.auds.includes(n));
+  const m = document.createElement('div');
+  m.className='menu';
+  m.innerHTML = avail.length
+    ? avail.map(n=>`<button data-n="${n}">${n}</button>`).join('')
+    : '<button disabled>All auditors already assigned</button>';
+  document.body.appendChild(m);
+  const r = anchor.getBoundingClientRect();
+  m.style.left = Math.min(window.innerWidth - m.offsetWidth - 12, r.left) + 'px';
+  m.style.top  = (r.bottom + window.scrollY + 6) + 'px';
+  m.style.position = 'absolute';
+  m.addEventListener('click', e=>{
+    const b = e.target.closest('button[data-n]'); if(!b) return;
+    row.auds.push(b.dataset.n); reAlloc(); closeMenu(); render();
+  });
+  openMenu = m;
+  setTimeout(()=>document.addEventListener('click', closeMenu, {once:true}), 0);
+}
+function closeMenu(){ if(openMenu){ openMenu.remove(); openMenu=null; } }
+
+render();
+})();
+</script>
+
+</body></html>
