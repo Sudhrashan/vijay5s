@@ -37,7 +37,7 @@ export default function InchargeApp() {
             <span className="material-symbols-outlined">bar_chart</span>
             <span className="i-nav-label">Reports</span>
           </button>
-          <button className="i-nav-btn" onClick={logout} title={user?.name}>
+          <button className="i-nav-btn" onClick={() => { if (window.confirm(`Signed in as ${user?.name}. Sign out?`)) logout(); }} title={user?.name}>
             <span className="material-symbols-outlined">account_circle</span>
             <span className="i-nav-label">Profile</span>
           </button>
