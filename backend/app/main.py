@@ -26,7 +26,11 @@ def run_migrations() -> None:
     cfg = AlembicConfig(os.path.join(BACKEND_DIR, "alembic.ini"))
     cfg.set_main_option("script_location", os.path.join(BACKEND_DIR, "alembic"))
     cfg.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
-    alembic_command.upgrade(cfg, "head")
+    try:
+        alembic_command.upgrade(cfg, "head")
+    except Exception:
+        log.exception("Alembic migration failed")
+        raise
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("app")

@@ -26,7 +26,13 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     # Drop and recreate audit_responses as the findings table. The old rows (scored
     # checkpoint answers) have no meaning under the new flow, so there is nothing to migrate.
-    op.drop_table("audit_responses")
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    existing_tables = inspector.get_table_names()
+    existing_audit_cols = {c["name"] for c in inspector.get_columns("audits")} if "audits" in existing_tables else set()
+
+    if "audit_responses" in existing_tables:
+        op.drop_table("audit_responses")
     op.create_table(
         "audit_responses",
         sa.Column("id", sa.Integer(), primary_key=True),
@@ -37,10 +43,12 @@ def upgrade() -> None:
         sa.Column("recorded_at", sa.DateTime(), server_default=sa.func.now()),
     )
 
-    with op.batch_alter_table("audits") as batch:
-        batch.drop_column("score")
+    if "score" in existing_audit_cols:
+        with op.batch_alter_table("audits") as batch:
+            batch.drop_column("score")
 
-    op.drop_table("checkpoints")
+    if "checkpoints" in existing_tables:
+        op.drop_table("checkpoints")
 
 
 def downgrade() -> None:
