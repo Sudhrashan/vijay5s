@@ -41,7 +41,11 @@ class Settings(BaseSettings):
     @field_validator("SUPABASE_URL", "SUPABASE_SERVICE_KEY", mode="before")
     @classmethod
     def _blank_is_none(cls, v):
-        return None if isinstance(v, str) and not v.strip() else v
+        # Values pasted into a host dashboard often carry a trailing space/newline or slash.
+        if isinstance(v, str):
+            v = v.strip().rstrip("/")
+            return v or None
+        return v
 
     @field_validator("ADMIN_EMP_ID")
     @classmethod

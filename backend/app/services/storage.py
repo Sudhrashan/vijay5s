@@ -50,6 +50,8 @@ def _save_supabase(f: UploadFile, ext: str) -> str:
         raise HTTPException(502, f"Photo upload to storage failed: {e.code} {body}") from e
     except urllib.error.URLError as e:
         raise HTTPException(502, f"Photo storage is unreachable: {e.reason}") from e
+    except ValueError as e:
+        raise HTTPException(500, f"Photo storage settings look wrong ({e}). Check SUPABASE_URL and SUPABASE_SERVICE_KEY on the API service.") from e
     except OSError as e:
         raise HTTPException(502, f"Photo upload to storage was interrupted ({type(e).__name__}). Try again.") from e
     return f"{settings.SUPABASE_URL}/storage/v1/object/public/{settings.SUPABASE_BUCKET}/{name}"
