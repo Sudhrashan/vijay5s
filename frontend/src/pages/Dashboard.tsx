@@ -40,10 +40,10 @@ export default function Dashboard() {
     return <><span className={up ? "up" : "down"}>{up ? "▲" : "▼"} {Math.abs(p).toFixed(0)}%</span> vs {monthName(prev.label)}</>;
   };
   const zrows = [...d.zones].sort((a, b) => b.open - a.open).filter((z) => z.open > 0);
-  const catMax = Math.max(1, ...m.cat);
+  const catMax = Math.max(1, ...m.fcat);
   const ageTot = d.ageing.reduce((a, b) => a + b.value, 0);
   const CATS = ["1S Sort", "2S Set in Order", "3S Shine", "4S Standardize", "5S Sustain"];
-  const topCat = CATS[m.cat.indexOf(Math.max(...m.cat))];
+  const topCat = CATS[m.fcat.indexOf(Math.max(...m.fcat))];
 
   return (
     <>
@@ -54,6 +54,7 @@ export default function Dashboard() {
 
       <div className="grid kpis">
         <Kpi label="Audit compliance" value={`${m.comp}%`} tint="var(--t-blue)" color="var(--blue)" icon={IC.audit} trend={`${m.audits_done} of ${m.audits_total} audits done`} spark={hist("comp")} />
+        <Kpi label="Findings logged" value={m.findings} tint="var(--t-blue)" color="var(--blue)" icon={IC.photo} trend={delta(m.findings, prev?.findings)} spark={hist("findings")} />
         <Kpi label="Open issues" value={m.open} tint="var(--t-red)" color="var(--red)" icon={IC.issue} trend={delta(m.open, prev?.open)} spark={hist("open")} />
         <Kpi label="Closed issues" value={m.closed} tint="var(--t-green)" color="var(--green)" icon={IC.check} trend={delta(m.closed, prev?.closed)} spark={hist("closed")} />
         <Kpi label="Overdue" value={m.overdue} tint="var(--t-amber)" color="var(--amber)" icon={IC.alert} trend={`past ${d.overdue_days}-day limit`} spark={hist("overdue")} />
@@ -71,10 +72,10 @@ export default function Dashboard() {
         </div>
         <div className="card">
           <h3>5S category analysis</h3>
-          <div className="note">{m.raised} issues raised in {monthName(m.label)}</div>
-          {CATS.map((c, i) => <BarRow key={c} name={c} value={m.cat[i]} max={catMax}
-            tip={`<b>${c}</b><br>${m.cat[i]} issues · ${m.raised ? ((m.cat[i] / m.raised) * 100).toFixed(0) : 0}% of month`} />)}
-          {m.raised > 0 && <div className="demo" style={{ marginTop: 12 }}>{topCat} is the largest category this month.</div>}
+          <div className="note">{m.findings} findings logged by auditors in {monthName(m.label)}</div>
+          {CATS.map((c, i) => <BarRow key={c} name={c} value={m.fcat[i]} max={catMax} onClick={() => nav("/photos")}
+            tip={`<b>${c}</b><br>${m.fcat[i]} findings · ${m.findings ? ((m.fcat[i] / m.findings) * 100).toFixed(0) : 0}% of month`} />)}
+          {m.findings > 0 && <div className="demo" style={{ marginTop: 12 }}>{topCat} is the largest category this month.</div>}
         </div>
       </div>
 
@@ -114,7 +115,7 @@ export default function Dashboard() {
         </div>
         <div className="card">
           <h3>Zone 5S scorecard</h3>
-          <div className="note">Findings this cycle = photos logged by auditors across that zone's completed audits</div>
+          <div className="note">Findings this cycle = photos logged by auditors in that zone, counted as soon as they are added</div>
           <div className="tw"><table>
             <thead><tr><th>Zone</th><th>Incharge</th><th className="num">Open</th><th className="num">Closed</th><th className="num">Findings this cycle</th></tr></thead>
             <tbody>{[...d.zones].sort((a, b) => b.findings - a.findings).map((z) => (
@@ -128,13 +129,13 @@ export default function Dashboard() {
       <div className="grid c50">
         <div className="card">
           <h3>Auditor performance</h3>
-          <div className="note">Audits completed and issues raised in {monthName(m.label)}</div>
+          <div className="note">Audits completed and findings logged in {monthName(m.label)}</div>
           {d.leaders.length === 0 && <div className="empty">No audits completed this month yet.</div>}
           {d.leaders.map((a, i) => (
             <div className="lead" key={a.name}>
               <span className="rank">{i + 1}</span>
               <div className="av sm">{ini(a.name)}</div>
-              <div><div className="nm">{a.name}</div><div className="mt">{a.audits} audits · {a.issues} issues raised</div></div>
+              <div><div className="nm">{a.name}</div><div className="mt">{a.audits} audits · {a.findings} findings · {a.issues} issues raised</div></div>
               <div className="sc"><b>{a.on_time}%</b><span>on schedule</span></div>
             </div>))}
         </div>

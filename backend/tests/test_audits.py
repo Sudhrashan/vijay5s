@@ -111,6 +111,29 @@ def test_gallery_lists_findings_by_zone_and_category(client, seeded_db, admin_he
     assert client.get("/api/findings", headers=auditor_headers).status_code == 403
 
 
+def test_dashboard_counts_findings_live_by_category(client, seeded_db, admin_headers):
+    zone, auditor = _future_zone_and_auditor(client, admin_headers)
+    scheduled = client.post("/api/audits", headers=admin_headers,
+                            json={"zone_id": zone["id"], "planned_date": str(date.today() + timedelta(days=5)),
+                                  "auditor_ids": [auditor["id"]]}).json()
+    aid, cyc = scheduled["id"], scheduled["cycle"]
+
+    def snap():
+        d = client.get("/api/dashboard", headers=admin_headers, params={"cycle": cyc}).json()
+        z = next(r for r in d["zones"] if r["id"] == zone["id"])
+        return d["current"], z["findings"]
+
+    before, zone_before = snap()
+    _add_finding(client, admin_headers, aid, "2S", "Tools not in shadow board")
+    _add_finding(client, admin_headers, aid, "2S", "Labels missing on racks")
+    _add_finding(client, admin_headers, aid, "5S", "Checklist not followed")
+    after, zone_after = snap()  # audit not submitted yet -- counts must already move
+
+    assert after["findings"] - before["findings"] == 3
+    assert [a - b for a, b in zip(after["fcat"], before["fcat"])] == [0, 2, 0, 0, 1]
+    assert zone_after - zone_before == 3
+
+
 def test_complete_blocked_once_completed(client, seeded_db, incharge_headers):
     zone, auditor = _future_zone_and_auditor(client, incharge_headers)
     scheduled = client.post("/api/audits", headers=incharge_headers,

@@ -10,13 +10,13 @@ export interface Issue {
 }
 export interface Zone { id: number; name: string; checkpoints: number; incharge_id: number | null; incharge: string | null; qr_token: string; open: number; closed: number; findings: number; avg_closure: number | null; }
 export interface Audit { id: number; zone_id: number; zone: string; cycle: string; planned_date: string; status: "Scheduled" | "Completed" | "Missed" | "Due today" | "Unassigned"; missed_reason: string | null; auditors: { id: number; name: string }[]; submitted_by: string | null; submitted_by_id: number | null; completed_at: string | null; }
-export interface Month { key: string; label: string; raised: number; closed: number; open: number; overdue: number; avg: number; comp: number; audits_done: number; audits_total: number; cat: number[]; }
+export interface Month { key: string; label: string; raised: number; closed: number; open: number; overdue: number; avg: number; comp: number; audits_done: number; audits_total: number; cat: number[]; findings: number; fcat: number[]; }
 export interface Dashboard {
   cycle: string; label: string; months: Month[]; current: Month;
   zones: { id: number; name: string; incharge: string; open: number; closed: number; findings: number }[];
   ageing: { label: string; value: number }[];
   repeats: { zone: string; desc: string; cat: string; n: number; months: string[] }[];
-  leaders: { name: string; audits: number; issues: number; on_time: number }[];
+  leaders: { name: string; audits: number; issues: number; findings: number; on_time: number }[];
   latest: Issue[]; zone_count: number; auditor_count: number; closure_target: number; overdue_days: number;
 }
 export interface Report { from: string; to: string; months: Month[]; total: number; closed: number; open: number; avg_closure: number | null; issues: Issue[]; closure_target: number; overdue_days: number; }

@@ -105,7 +105,7 @@ select,input[type=text],input[type=date]{
 .lab{font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
 
 .grid{display:grid; gap:16px}
-.kpis{grid-template-columns:repeat(5,1fr)}
+.kpis{grid-template-columns:repeat(6,1fr)}
 .c60-40{grid-template-columns:1.5fr 1fr; align-items:start}
 .c50{grid-template-columns:1fr 1fr; align-items:start}
 .c-alloc{grid-template-columns:1fr 280px}

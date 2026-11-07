@@ -52,8 +52,8 @@ export default function Reports() {
 
   const od = data.overdue_days;
   const range = data.months;
-  const catMax = Math.max(1, ...range.flatMap((m) => m.cat));
-  const catTotals = CATS.map((_, i) => range.reduce((s, m) => s + (m.cat[i] ?? 0), 0));
+  const catTotals = CATS.map((_, i) => range.reduce((s, m) => s + (m.fcat[i] ?? 0), 0));
+  const catMax = Math.max(1, ...catTotals);
 
   return (
     <>
@@ -98,9 +98,9 @@ export default function Reports() {
 
       <div className="card">
         <h3>Category breakdown</h3>
-        <div className="note">Issues raised by 5S category over the selected range</div>
-        {CATS.map((c, i) => <BarRow key={c} name={CAT_LABELS[i]} value={catTotals[i]} max={catMax * range.length}
-          tip={`<b>${CAT_LABELS[i]}</b><br>${catTotals[i]} issues`} />)}
+        <div className="note">Findings logged by auditors, by 5S category, over the selected range</div>
+        {CATS.map((c, i) => <BarRow key={c} name={CAT_LABELS[i]} value={catTotals[i]} max={catMax}
+          tip={`<b>${CAT_LABELS[i]}</b><br>${catTotals[i]} findings`} />)}
       </div>
 
       <div className="card">

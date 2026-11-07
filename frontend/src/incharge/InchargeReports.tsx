@@ -46,7 +46,7 @@ export default function InchargeReports() {
   const closureRate = current.raised > 0 ? Math.round((current.closed / current.raised) * 100) : 0;
   const prevClosureRate = prev && prev.raised > 0 ? Math.round((prev.closed / prev.raised) * 100) : null;
   const trendDelta = prevClosureRate !== null ? closureRate - prevClosureRate : null;
-  const maxCat = Math.max(1, ...current.cat);
+  const maxCat = Math.max(1, ...current.fcat);
   const monthLabel = current.label;
 
   return (
@@ -78,16 +78,16 @@ export default function InchargeReports() {
         </section>
 
         <section>
-          <h2 className="i-section-label" style={{ display: "block", marginBottom: 8 }}>Issues by category</h2>
+          <h2 className="i-section-label" style={{ display: "block", marginBottom: 8 }}>Audit findings by category</h2>
           <div className="i-card">
             {CATK.map((k, idx) => (
               <div className="i-cat-row" key={k}>
                 <div className="i-cat-row-top">
                   <span>{CAT_LABELS[k]}</span>
-                  <span>{current.cat[idx]}</span>
+                  <span>{current.fcat[idx]}</span>
                 </div>
                 <div className="i-cat-track">
-                  <div className="i-cat-fill" style={{ width: `${Math.round((current.cat[idx] / maxCat) * 100)}%`, background: CAT_COLORS[k] }} />
+                  <div className="i-cat-fill" style={{ width: `${Math.round((current.fcat[idx] / maxCat) * 100)}%`, background: CAT_COLORS[k] }} />
                 </div>
               </div>
             ))}
