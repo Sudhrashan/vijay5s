@@ -8,7 +8,7 @@ export type LiveState = "connecting" | "live" | "offline";
 
 // Which cached queries each server event makes stale. Pages refetch only what changed.
 const INVALIDATES: Record<string, string[]> = {
-  issue: ["issues", "dashboard", "reports", "zones", "meta"],
+  issue: ["issues", "findings", "audits", "dashboard", "reports", "zones", "meta"],
   audit: ["audits", "findings", "dashboard", "reports", "meta"],
   allocation: ["audits", "dashboard"],
   user: ["users", "meta", "zones", "dashboard"],
@@ -22,6 +22,7 @@ function describe(e: LiveEvent): string | null {
     case "issue.created": return `${d.code} raised in ${d.zone} by ${d.by}`;
     case "issue.closed": return `${d.code} closed in ${d.zone} by ${d.by}`;
     case "issue.reopened": return `${d.code} reopened in ${d.zone}`;
+    case "issue.deleted": return `${d.code} deleted from ${d.zone} by ${d.by}`;
     case "issue.escalated": return `${d.count} issue${d.count === 1 ? "" : "s"} escalated`;
     case "allocation.saved": return `Allocation saved — ${d.zones} zones assigned`;
     case "audit.changed": return d.action === "cycle" ? `${d.cycle} audit cycle created` : `${d.zone} audit ${d.action}`;

@@ -8,7 +8,7 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
-from app.api.deps import anyone, staff
+from app.api.deps import admin_only, anyone, staff
 from app.db.session import get_db
 from app.models import Issue, User, Zone
 from app.realtime.hub import hub
@@ -16,7 +16,8 @@ from app.schemas.inputs import IssueIn
 from app.services import settings_service
 from app.services.serializers import issue_out
 from app.services.stats import repeat_counts
-from app.services.storage import save_photo
+from app.services.findings import delete_issue_and_findings
+from app.services.storage import delete_photo, save_photo
 
 router = APIRouter(prefix="/issues", tags=["issues"])
 
@@ -131,3 +132,17 @@ def reopen_issue(issue_id: int, bg: BackgroundTasks, user: User = Depends(staff)
     db.refresh(issue)
     bg.add_task(hub.publish, "issue.reopened", {"code": issue.code, "zone": issue.zone.name, "by": user.name})
     return issue_out(issue)
+
+
+@router.delete("/{issue_id}")
+def delete_issue(issue_id: int, bg: BackgroundTasks, user: User = Depends(admin_only), db: Session = Depends(get_db)):
+    """Super Admin only. Removes the issue, the audit finding it came from, and their photos."""
+    issue = db.get(Issue, issue_id)
+    if not issue:
+        raise HTTPException(404, "Issue not found. It may already have been deleted.")
+    code, zone = issue.code, issue.zone.name
+    for url in delete_issue_and_findings(db, issue):
+        bg.add_task(delete_photo, url)
+    bg.add_task(hub.publish, "issue.deleted", {"code": code, "zone": zone, "by": user.name})
+    bg.add_task(hub.publish, "audit.changed", {"zone": zone, "action": "finding deleted"})
+    return {"ok": True, "code": code}

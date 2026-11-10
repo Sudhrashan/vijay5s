@@ -360,3 +360,23 @@ def test_finding_opens_issue_that_incharge_closes_with_after_photo(client, seede
 
     after = client.get(f"/api/audits/{aid}/findings", headers=admin_headers).json()["items"][0]
     assert after["issue_status"] == "Closed" and after["after_photo"]
+
+
+def test_super_admin_deletes_finding_and_issue(client, seeded_db, admin_headers, incharge_headers):
+    zone, auditor = _future_zone_and_auditor(client, admin_headers)
+    aid = client.post("/api/audits", headers=admin_headers,
+                      json={"zone_id": zone["id"], "planned_date": str(date.today() + timedelta(days=5)),
+                            "auditor_ids": [auditor["id"]]}).json()["id"]
+    f1 = _add_finding(client, admin_headers, aid, "1S", "Delete via photo").json()
+    f2 = _add_finding(client, admin_headers, aid, "2S", "Delete via issue").json()
+
+    assert client.delete(f"/api/findings/{f1['id']}", headers=incharge_headers).status_code == 403
+    assert client.delete(f"/api/issues/{f2['issue_id']}", headers=incharge_headers).status_code == 403
+
+    assert client.delete(f"/api/findings/{f1['id']}", headers=admin_headers).status_code == 200
+    assert client.delete(f"/api/issues/{f2['issue_id']}", headers=admin_headers).status_code == 200
+
+    assert client.get(f"/api/audits/{aid}/findings", headers=admin_headers).json()["items"] == []
+    ids = {i["id"] for i in client.get("/api/issues", headers=admin_headers).json()["items"]}
+    assert f1["issue_id"] not in ids and f2["issue_id"] not in ids
+    assert client.delete(f"/api/issues/{f2['issue_id']}", headers=admin_headers).status_code == 404

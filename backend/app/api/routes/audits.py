@@ -4,13 +4,14 @@ from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPExcepti
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
-from app.api.deps import anyone, staff
+from app.api.deps import admin_only, anyone, staff
 from app.db.session import get_db
 from app.models import Audit, Finding, User, Zone
 from app.realtime.hub import hub
 from app.schemas.inputs import AllocationIn, AuditIn, AuditPatch, CycleIn, FindingIn
 from app.services import settings_service
-from app.services.findings import open_issue_for_finding
+from app.services.findings import delete_issue_and_findings, open_issue_for_finding
+from app.services.storage import delete_photo
 from app.services.serializers import audit_out, finding_out
 from app.services.stats import current_cycle
 from app.services.storage import save_photo
@@ -125,6 +126,24 @@ def add_finding(audit_id: int, bg: BackgroundTasks, category: str = Form(...), r
     bg.add_task(hub.publish, "issue.created", {"code": issue.code, "zone": a.zone.name,
                                                "description": remark, "by": user.name})
     return finding_out(finding)
+
+
+@router.delete("/findings/{finding_id}")
+def delete_finding(finding_id: int, bg: BackgroundTasks, user: User = Depends(admin_only), db: Session = Depends(get_db)):
+    """Super Admin only. Removes the finding, the issue opened for it, and their photos."""
+    f = db.get(Finding, finding_id)
+    if not f:
+        raise HTTPException(404, "Photo not found. It may already have been deleted.")
+    issue, audit_id = f.issue, f.audit_id
+    a = db.get(Audit, audit_id)
+    zone = a.zone.name if a else ""
+    code = issue.code if issue else None
+    for url in delete_issue_and_findings(db, issue, f):
+        bg.add_task(delete_photo, url)
+    bg.add_task(hub.publish, "audit.changed", {"audit_id": audit_id, "zone": zone, "action": "finding deleted"})
+    if code:
+        bg.add_task(hub.publish, "issue.deleted", {"code": code, "zone": zone, "by": user.name})
+    return {"ok": True}
 
 
 @router.post("/audits/{audit_id}/complete")

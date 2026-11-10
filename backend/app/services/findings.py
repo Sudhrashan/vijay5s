@@ -3,7 +3,7 @@ from datetime import datetime
 
 from sqlalchemy.orm import Session
 
-from app.models import Audit, Issue
+from app.models import Audit, Finding, Issue
 
 
 def open_issue_for_finding(db: Session, audit: Audit, category: str, remark: str,
@@ -18,3 +18,22 @@ def open_issue_for_finding(db: Session, audit: Audit, category: str, remark: str
     db.flush()
     issue.code = f"VD-{1000 + issue.id}"
     return issue
+
+
+def delete_issue_and_findings(db: Session, issue: Issue | None, finding: Finding | None = None) -> list[str]:
+    """Delete an issue together with the audit finding(s) linked to it (or a lone finding).
+    Commits. Returns the photo URLs that are no longer referenced, for the caller to remove."""
+    findings = []
+    if issue is not None:
+        findings = db.query(Finding).filter(Finding.issue_id == issue.id).all()
+    if finding is not None and finding not in findings:
+        findings.append(finding)
+    urls = [f.photo_url for f in findings]
+    if issue is not None:
+        urls += [issue.before_photo, issue.after_photo]
+    for f in findings:
+        db.delete(f)
+    if issue is not None:
+        db.delete(issue)
+    db.commit()
+    return [u for u in dict.fromkeys(urls) if u]

@@ -4,6 +4,7 @@ Local disk (UPLOAD_DIR) by default -- fine for local dev, but most hosts wipe it
 redeploy. Set SUPABASE_URL + SUPABASE_SERVICE_KEY to upload to Supabase Storage instead, so
 photos survive redeploys once this is actually deployed.
 """
+import logging
 import os
 import urllib.error
 import urllib.request
@@ -12,6 +13,8 @@ import uuid
 from fastapi import HTTPException, UploadFile
 
 from app.core.config import settings
+
+log = logging.getLogger("app.storage")
 
 ALLOWED_PHOTOS = {"image/jpeg": ".jpg", "image/png": ".png", "image/webp": ".webp"}
 
@@ -63,3 +66,26 @@ def save_photo(f: UploadFile) -> str:
     if settings.SUPABASE_URL and settings.SUPABASE_SERVICE_KEY:
         return _save_supabase(f, ext)
     return _save_local(f, ext)
+
+
+def delete_photo(url: str | None) -> None:
+    """Best-effort removal of a stored photo. Never raises: a missing file must not block
+    deleting the record that pointed at it."""
+    if not url:
+        return
+    try:
+        if url.startswith("/uploads/"):
+            path = os.path.join(settings.UPLOAD_DIR, os.path.basename(url))
+            if os.path.exists(path):
+                os.remove(path)
+            return
+        marker = f"/storage/v1/object/public/{settings.SUPABASE_BUCKET}/"
+        if settings.SUPABASE_URL and settings.SUPABASE_SERVICE_KEY and marker in url:
+            name = url.split(marker, 1)[1]
+            req = urllib.request.Request(
+                f"{settings.SUPABASE_URL}/storage/v1/object/{settings.SUPABASE_BUCKET}/{name}", method="DELETE",
+                headers={"Authorization": f"Bearer {settings.SUPABASE_SERVICE_KEY}",
+                         "apikey": settings.SUPABASE_SERVICE_KEY})
+            urllib.request.urlopen(req, timeout=15)
+    except Exception:  # noqa: BLE001 -- best effort only
+        log.warning("Could not delete stored photo %s", url, exc_info=True)

@@ -102,13 +102,23 @@ function IssueModal({ issue, onClose, onDone }: { issue: Issue; onClose: () => v
     mutationFn: () => api.post<Issue>(`/issues/${issue.id}/reopen`),
     onSuccess: (i) => onDone(`${i.code} reopened`), onError: (e: Error) => setErr(e.message),
   });
+  const del = useMutation({
+    mutationFn: () => api.del<{ ok: boolean }>(`/issues/${issue.id}`),
+    onSuccess: () => onDone(`${issue.code} deleted`), onError: (e: Error) => setErr(e.message),
+  });
+  const askDelete = () => {
+    if (window.confirm(`Delete ${issue.code}?\n\n"${issue.description}"\n\nThe audit finding and its before and after photos are removed too. This cannot be undone.`)) del.mutate();
+  };
   const staff = can("Super Admin", "5S Incharge");
   const LV = ["—", "Area Head", "Plant Head", "Factory Manager"];
   return (
     <Modal title={`${issue.code} · ${issue.zone}`} onClose={onClose}
-      footer={staff && (issue.status === "Open"
-        ? <button className="btn" onClick={() => close.mutate()} disabled={close.isPending}>Close issue</button>
-        : <button className="btn ghost" onClick={() => reopen.mutate()} disabled={reopen.isPending}>Reopen issue</button>)}>
+      footer={staff && <>
+        {can("Super Admin") && <button className="btn ghost" style={{ color: "var(--red)", marginRight: "auto" }} onClick={askDelete} disabled={del.isPending}>Delete issue</button>}
+        {issue.status === "Open"
+          ? <button className="btn" onClick={() => close.mutate()} disabled={close.isPending}>Close issue</button>
+          : <button className="btn ghost" onClick={() => reopen.mutate()} disabled={reopen.isPending}>Reopen issue</button>}
+      </>}>
       <dl className="kv">
         <dt>Finding</dt><dd>{issue.description}</dd>
         <dt>Category</dt><dd>{issue.category_full}</dd>
