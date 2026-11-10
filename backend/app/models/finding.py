@@ -20,3 +20,8 @@ class Finding(Base):
     remark: Mapped[str] = mapped_column(Text)
     photo_url: Mapped[str] = mapped_column(String(300))
     recorded_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    # Every finding opens an Issue (before photo = this photo) so the zone's 5S Incharge can
+    # close it with an after photo through the normal issue close flow.
+    issue_id: Mapped[int | None] = mapped_column(ForeignKey("issues.id", ondelete="SET NULL"), index=True)
+
+    issue = relationship("Issue", lazy="joined")

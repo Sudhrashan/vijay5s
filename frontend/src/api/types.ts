@@ -30,6 +30,7 @@ export interface Settings {
   notifications: Record<string, boolean>; integrity: Record<string, boolean>;
 }
 export interface LiveEvent { topic: string; data: Record<string, any>; at?: string; }
-export interface Finding { id: number; audit_id: number; category: string; remark: string; photo_url: string; recorded_at: string | null; }
+export interface Finding { id: number; audit_id: number; category: string; remark: string; photo_url: string; recorded_at: string | null;
+  issue_id: number | null; issue_code: string | null; issue_status: "Open" | "Closed" | null; after_photo: string | null; }
 export interface GalleryFinding extends Finding { zone_id: number; zone: string; auditors: string; }
 export interface AuditsResponse { cycle: string; today: string; items: Audit[]; }

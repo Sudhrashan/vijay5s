@@ -10,6 +10,7 @@ from app.models import Audit, Finding, User, Zone
 from app.realtime.hub import hub
 from app.schemas.inputs import AllocationIn, AuditIn, AuditPatch, CycleIn, FindingIn
 from app.services import settings_service
+from app.services.findings import open_issue_for_finding
 from app.services.serializers import audit_out, finding_out
 from app.services.stats import current_cycle
 from app.services.storage import save_photo
@@ -114,11 +115,15 @@ def add_finding(audit_id: int, bg: BackgroundTasks, category: str = Form(...), r
         msg = "; ".join(err["msg"] for err in e.errors())
         raise HTTPException(422, msg) from e
     photo_url = save_photo(photo)
-    finding = Finding(audit_id=a.id, category=body.category, remark=body.remark.strip(), photo_url=photo_url)
+    remark = body.remark.strip()
+    issue = open_issue_for_finding(db, a, body.category, remark, photo_url, user.id)
+    finding = Finding(audit_id=a.id, category=body.category, remark=remark, photo_url=photo_url, issue_id=issue.id)
     db.add(finding)
     db.commit()
     db.refresh(finding)
     bg.add_task(hub.publish, "audit.changed", {"audit_id": audit_id, "zone": a.zone.name, "action": "finding"})
+    bg.add_task(hub.publish, "issue.created", {"code": issue.code, "zone": a.zone.name,
+                                               "description": remark, "by": user.name})
     return finding_out(finding)
 
 

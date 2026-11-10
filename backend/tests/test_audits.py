@@ -338,3 +338,25 @@ def test_start_cycle_duplicate_rejected(client, seeded_db, incharge_headers):
     assert first.status_code == 201
     second = client.post("/api/audits/cycle", headers=incharge_headers, json={"cycle": future_cycle})
     assert second.status_code == 409
+
+
+def test_finding_opens_issue_that_incharge_closes_with_after_photo(client, seeded_db, admin_headers):
+    zone, auditor = _future_zone_and_auditor(client, admin_headers)
+    scheduled = client.post("/api/audits", headers=admin_headers,
+                            json={"zone_id": zone["id"], "planned_date": str(date.today() + timedelta(days=5)),
+                                  "auditor_ids": [auditor["id"]]}).json()
+    aid = scheduled["id"]
+    f = _add_finding(client, admin_headers, aid, "3S", "Oil spill near pump").json()
+    assert f["issue_id"] and f["issue_status"] == "Open" and f["issue_code"].startswith("VD-")
+
+    issue = next(i for i in client.get("/api/issues", headers=admin_headers).json()["items"] if i["id"] == f["issue_id"])
+    assert issue["before_photo"] == f["photo_url"] and issue["description"] == "Oil spill near pump"
+    assert issue["category"] == "3S" and issue["status"] == "Open"
+
+    png = b"\x89PNG\r\n\x1a\n" + b"0" * 64
+    r = client.post(f"/api/issues/{f['issue_id']}/close", headers=admin_headers,
+                    data={"note": "Cleaned"}, files={"after_photo": ("after.png", png, "image/png")})
+    assert r.status_code == 200, r.text
+
+    after = client.get(f"/api/audits/{aid}/findings", headers=admin_headers).json()["items"][0]
+    assert after["issue_status"] == "Closed" and after["after_photo"]

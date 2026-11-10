@@ -43,6 +43,10 @@ def finding_out(f: Finding) -> dict:
         "id": f.id, "audit_id": f.audit_id, "category": f.category,
         "remark": f.remark, "photo_url": f.photo_url,
         "recorded_at": f.recorded_at.isoformat(timespec="minutes") if f.recorded_at else None,
+        "issue_id": f.issue_id,
+        "issue_code": f.issue.code if f.issue else None,
+        "issue_status": f.issue.status if f.issue else None,
+        "after_photo": f.issue.after_photo if f.issue else None,
     }
 
 

@@ -5,6 +5,7 @@ import { api } from "../api/client";
 import { useAuth } from "../lib/auth";
 import { useServerCycle } from "../lib/cycle";
 import { auditPill, submittedLine } from "../lib/format";
+import PhotoViewer from "./PhotoViewer";
 import type { Audit, AuditsResponse, Finding, Issue } from "../api/types";
 
 type FilterKey = "All" | "Open" | "Closed" | "Overdue";
@@ -18,6 +19,8 @@ function ZoneAuditFindings({ audit }: { audit: Audit }) {
     queryFn: () => api.get<{ items: Finding[] }>(`/audits/${audit.id}/findings`),
   });
   const findings = data?.items ?? [];
+  const nav = useNavigate();
+  const [view, setView] = useState<Finding | null>(null);
 
   return (
     <div className="i-card">
@@ -34,17 +37,38 @@ function ZoneAuditFindings({ audit }: { audit: Audit }) {
       {!isLoading && findings.length === 0 && <div className="i-issue-sub">No findings logged yet.</div>}
       {!isLoading && findings.length > 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {findings.map((f) => (
-            <div key={f.id} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-              <img src={f.photo_url} alt="Finding" style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 8, flexShrink: 0, border: "1px solid var(--i-outline-variant)" }} />
-              <div style={{ minWidth: 0 }}>
-                <span className="i-badge i-badge-open" style={{ background: "rgba(11,95,165,0.12)", color: "var(--i-primary-container)" }}>{f.category}</span>
-                <p style={{ margin: "4px 0 0", fontSize: 13 }}>{f.remark}</p>
+          {findings.map((f) => {
+            const closed = f.issue_status === "Closed";
+            return (
+              <div key={f.id} style={{ display: "flex", gap: 10, alignItems: "flex-start", paddingBottom: 10, borderBottom: "1px solid var(--i-surface-container-highest)" }}>
+                <button aria-label="Open photo" onClick={() => setView(f)} style={{ padding: 0, border: 0, background: "none", flexShrink: 0 }}>
+                  <img src={f.photo_url} alt="Finding" style={{ width: 72, height: 72, objectFit: "cover", borderRadius: 8, border: "1px solid var(--i-outline-variant)", display: "block" }} />
+                </button>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+                    <span className="i-badge i-badge-open" style={{ background: "rgba(11,95,165,0.12)", color: "var(--i-primary-container)" }}>{f.category}</span>
+                    {f.issue_status && <span className={`i-badge ${closed ? "i-badge-closed" : "i-badge-open"}`}>{closed ? "Closed" : "Open"}</span>}
+                  </div>
+                  <p style={{ margin: "4px 0 6px", fontSize: 13 }}>{f.remark}</p>
+                  {f.issue_id && !closed && (
+                    <button className="i-btn-primary" style={{ padding: "8px 12px", fontSize: 13, width: "auto", display: "inline-flex", alignItems: "center", gap: 6 }}
+                      onClick={() => nav(`/issue/${f.issue_id}`)}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 18 }}>photo_camera</span>Close with photo
+                    </button>
+                  )}
+                  {f.issue_id && closed && (
+                    <button onClick={() => nav(`/issue/${f.issue_id}/verify`)}
+                      style={{ border: 0, background: "none", padding: 0, color: "var(--i-primary-container)", fontSize: 13, fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 4 }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 18, color: "var(--i-green)" }}>check_circle</span>See before and after
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
+      {view && <PhotoViewer src={view.photo_url} caption={`${view.category} — ${view.remark}`} onClose={() => setView(null)} />}
     </div>
   );
 }

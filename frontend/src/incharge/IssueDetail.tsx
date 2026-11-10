@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, ApiError } from "../api/client";
 import type { Issue } from "../api/types";
+import PhotoViewer from "./PhotoViewer";
 import { isPhotoTooLarge, PHOTO_TOO_LARGE } from "../lib/photo";
 
 export default function IssueDetail() {
@@ -29,6 +30,7 @@ export default function IssueDetail() {
   const [afterFile, setAfterFile] = useState<File | null>(null);
   const [afterPreview, setAfterPreview] = useState<string | null>(null);
   const [err, setErr] = useState("");
+  const [big, setBig] = useState<string | null>(null);
 
   const close = useMutation({
     mutationFn: async () => {
@@ -82,9 +84,9 @@ export default function IssueDetail() {
         </div>
 
         <section>
-          <h2 className="i-section-label" style={{ display: "block", marginBottom: 8 }}>Before</h2>
+          <h2 className="i-section-label" style={{ display: "block", marginBottom: 8 }}>Before {issue.before_photo && "· tap photo to enlarge"}</h2>
           {issue.before_photo ? (
-            <img className="i-photo-img" src={issue.before_photo} alt="Before" style={{ marginBottom: 12 }} />
+            <img className="i-photo-img" src={issue.before_photo} alt="Before" style={{ marginBottom: 12, cursor: "zoom-in" }} onClick={() => setBig(issue.before_photo)} />
           ) : (
             <div className="i-card" style={{ marginBottom: 12, textAlign: "center", color: "var(--i-on-surface-variant)" }}>No before photo attached.</div>
           )}
@@ -112,7 +114,7 @@ export default function IssueDetail() {
         <section>
           <h2 className="i-section-label" style={{ display: "block", marginBottom: 8 }}>After photo</h2>
           {issue.status === "Closed" ? (
-            issue.after_photo ? <img className="i-photo-img" src={issue.after_photo} alt="After" /> : (
+            issue.after_photo ? <img className="i-photo-img" src={issue.after_photo} alt="After" style={{ cursor: "zoom-in" }} onClick={() => setBig(issue.after_photo)} /> : (
               <div className="i-card" style={{ textAlign: "center", color: "var(--i-on-surface-variant)" }}>No after photo attached.</div>
             )
           ) : (
@@ -132,6 +134,7 @@ export default function IssueDetail() {
 
         {err && <div className="i-error">{err}</div>}
       </main>
+      {big && <PhotoViewer src={big} caption={issue.description} onClose={() => setBig(null)} />}
 
       {issue.status === "Open" && (
         <div className="i-footer-fixed">
